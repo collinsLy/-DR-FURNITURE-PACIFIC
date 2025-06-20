@@ -21,7 +21,7 @@
 		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 		<link href="css/tiny-slider.css" rel="stylesheet">
 		<link href="css/style.css" rel="stylesheet">
-		<title>Shopping Cart - DR FURNITURE PACIFIC</title>
+		<title>DR FURNITURE PACIFIC - Shop</title>
 	</head>
 
 	<body>
@@ -38,10 +38,8 @@
 
 				<div class="collapse navbar-collapse" id="navbarsDRFurniture">
 					<ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
-						<li class="nav-item ">
-							<a class="nav-link" href="index.html">Home</a>
-						</li>
-						<li><a class="nav-link" href="shop-firebase.html">Shop</a></li>
+						<li><a class="nav-link" href="index.html">Home</a></li>
+						<li class="nav-item active"><a class="nav-link" href="shop-firebase.html">Shop</a></li>
 						<li><a class="nav-link" href="about.html">About us</a></li>
 						<li><a class="nav-link" href="services.html">Services</a></li>
 						<li><a class="nav-link" href="blog.html">Blog</a></li>
@@ -59,107 +57,73 @@
 		<!-- End Header/Navigation -->
 
 		<!-- Start Hero Section -->
-			<div class="hero">
-				<div class="container">
-					<div class="row justify-content-between">
-						<div class="col-lg-5">
-							<div class="intro-excerpt">
-								<h1>Cart</h1>
-							</div>
+		<div class="hero">
+			<div class="container">
+				<div class="row justify-content-between">
+					<div class="col-lg-5">
+						<div class="intro-excerpt">
+							<h1>Shop</h1>
 						</div>
-						<div class="col-lg-7">
-							
-						</div>
+					</div>
+					<div class="col-lg-7">
+						
 					</div>
 				</div>
 			</div>
+		</div>
 		<!-- End Hero Section -->
 
-		
+		<!-- Filter Section -->
+		<div class="filter-section py-5">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-3 mb-3">
+						<label for="categoryFilter" class="form-label">Category</label>
+						<select class="form-select" id="categoryFilter">
+							<option value="all">All Categories</option>
+							<!-- Categories will be loaded dynamically -->
+						</select>
+					</div>
+					<div class="col-md-3 mb-3">
+						<label for="priceFilter" class="form-label">Price Range</label>
+						<select class="form-select" id="priceFilter">
+							<option value="all">All Prices</option>
+							<option value="0-500">Ksh0 - Ksh500</option>
+							<option value="500-1000">Ksh500 - Ksh1000</option>
+							<option value="1000-2000">Ksh1000 - Ksh2000</option>
+							<option value="2000+">Ksh2000+</option>
+						</select>
+					</div>
+					<div class="col-md-4 mb-3">
+						<label for="searchInput" class="form-label">Search</label>
+						<input type="text" class="form-control" id="searchInput" placeholder="Search furniture...">
+					</div>
+					<div class="col-md-2 mb-3 d-flex align-items-end">
+						<button id="resetFilters" class="btn btn-secondary w-100">Reset Filters</button>
+					</div>
+				</div>
+			</div>
+		</div>
 
-		<div class="untree_co-section before-footer-section">
-            <div class="container">
-              <div class="row mb-5">
-                <form class="col-md-12" method="post">
-                  <div class="site-blocks-table">
-                    <table class="table">
-                      <thead>
-                        <tr>
-                          <th class="product-thumbnail">Image</th>
-                          <th class="product-name">Product</th>
-                          <th class="product-price">Price</th>
-                          <th class="product-quantity">Quantity</th>
-                          <th class="product-total">Total</th>
-                          <th class="product-remove">Remove</th>
-                        </tr>
-                      </thead>
-                      <tbody id="cartItemsBody">
-                      </tbody>
-                    </table>
-                  </div>
-                </form>
-              </div>
-        
-              <div class="row">
-                <div class="col-md-6">
-                  <div class="row mb-5">
-                    <div class="col-md-6 mb-3 mb-md-0">
-                      <button class="btn btn-black btn-sm btn-block">Update Cart</button>
-                    </div>
-                    <div class="col-md-6">
-                      <button class="btn btn-outline-black btn-sm btn-block">Continue Shopping</button>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-md-12">
-                      <label class="text-black h4" for="coupon">Coupon</label>
-                      <p>Enter your coupon code if you have one.</p>
-                    </div>
-                    <div class="col-md-8 mb-3 mb-md-0">
-                      <input type="text" class="form-control py-3" id="coupon" placeholder="Coupon Code">
-                    </div>
-                    <div class="col-md-4">
-                      <button class="btn btn-black">Apply Coupon</button>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-6 pl-5">
-                  <div class="row justify-content-end">
-                    <div class="col-md-7">
-                      <div class="row">
-                        <div class="col-md-12 text-right border-bottom mb-5">
-                          <h3 class="text-black h4 text-uppercase">Cart Totals</h3>
-                        </div>
-                      </div>
-                      <div class="row mb-3">
-                        <div class="col-md-6">
-                          <span class="text-black">Subtotal</span>
-                        </div>
-                        <div class="col-md-6 text-right">
-                          <strong class="text-black" id="cartSubtotal"></strong>
-                        </div>
-                      </div>
-                      <div class="row mb-5">
-                        <div class="col-md-6">
-                          <span class="text-black">Total</span>
-                        </div>
-                        <div class="col-md-6 text-right">
-                          <strong class="text-black" id="cartTotal"></strong>
-                        </div>
-                      </div>
-        
-                      <div class="row">
-                        <div class="col-md-12">
-                          <button class="btn btn-black btn-lg py-3 btn-block" onclick="window.location='checkout.html'">Proceed To Checkout</button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-		
+		<!-- Start Product Section -->
+		<div class="product-section">
+			<div class="container">
+				<div class="row" id="furnitureContainer">
+					<!-- Furniture items will be loaded dynamically from Firebase -->
+					<div class="col-12 text-center py-5" id="loadingIndicator">
+						<div class="spinner-border text-primary" role="status">
+							<span class="visually-hidden">Loading...</span>
+						</div>
+						<p class="mt-2">Loading furniture items...</p>
+					</div>
+					
+					<div class="col-12 text-center py-5" id="noResultsMessage" style="display: none;">
+						<p>No furniture items match your search criteria. Please try different filters.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- End Product Section -->
 
 		<!-- Start Footer Section -->
 		<footer class="footer-section">
@@ -235,7 +199,7 @@
 
 							<div class="col-6 col-sm-6 col-md-3">
 								<ul class="list-unstyled">
-		
+
 								</ul>
 							</div>
 						</div>
@@ -246,7 +210,7 @@
 				<div class="border-top copyright">
 					<div class="row pt-4">
 						<div class="col-lg-6">
-							<p class="mb-2 text-center text-lg-start">Copyright &copy;<script>document.write(new Date().getFullYear());</script>. All Rights Reserved. &mdash; Designed by Kelvin Ndungu  <!-- License information: https://untree.co/license/ -->
+							<p class="mb-2 text-center text-lg-start">Copyright &copy;<script>document.write(new Date().getFullYear());</script>. All Rights Reserved. &mdash; Designed by Kelvin Ndungu
             </p>
 						</div>
 
@@ -265,10 +229,66 @@
 		<!-- End Footer Section -->	
 
 
+		<!-- Firebase SDK -->
+		<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+		
 		<script src="js/bootstrap.bundle.min.js"></script>
 		<script src="js/tiny-slider.js"></script>
+		<script src="js/cart.js"></script>
 		<script src="js/custom.js"></script>
-        <script src="js/cart.js"></script>
+		<script src="js/firebase-integration.js"></script>
+		
+		<!-- Shop Page Specific Script -->
+		<script>
+			document.addEventListener('DOMContentLoaded', function() {
+				// Load all furniture items when the page loads
+				loadShopProducts();
+				
+				// Load categories for the filter dropdown
+				loadCategories();
+				
+				// Set up event listeners for filters
+				document.getElementById('categoryFilter').addEventListener('change', applyFilters);
+				document.getElementById('priceFilter').addEventListener('change', applyFilters);
+				document.getElementById('searchInput').addEventListener('input', applyFilters);
+				document.getElementById('resetFilters').addEventListener('click', resetFilters);
+			});
+			
+			// Function to reset all filters
+			function resetFilters() {
+				document.getElementById('categoryFilter').value = 'all';
+				document.getElementById('priceFilter').value = 'all';
+				document.getElementById('searchInput').value = '';
+				applyFilters();
+			}
+			
+			// Function to apply all filters
+			function applyFilters() {
+				const category = document.getElementById('categoryFilter').value;
+				const priceRange = document.getElementById('priceFilter').value;
+				const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+				
+				// Show loading indicator
+				document.getElementById('loadingIndicator').style.display = 'block';
+				document.getElementById('noResultsMessage').style.display = 'none';
+				
+				// Clear existing furniture items
+				const container = document.getElementById('furnitureContainer');
+				const loadingIndicator = document.getElementById('loadingIndicator');
+				const noResultsMessage = document.getElementById('noResultsMessage');
+				
+				// Remove all furniture items but keep the loading indicator and no results message
+				Array.from(container.children).forEach(child => {
+					if (child !== loadingIndicator && child !== noResultsMessage) {
+						container.removeChild(child);
+					}
+				});
+				
+				// Get filtered furniture items from Firebase
+				getFilteredFurniture(category, priceRange, searchTerm);
+			}
+		</script>
 	</body>
 
 </html>

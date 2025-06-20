@@ -1,6 +1,6 @@
 <!-- /*
 * Bootstrap 5
-* Template Name: Furni
+* Template Name: DR FURNITURE PACIFIC
 * Template Author: Untree.co
 * Template URI: https://untree.co/
 * License: https://creativecommons.org/licenses/by/3.0/
@@ -21,27 +21,27 @@
 		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 		<link href="css/tiny-slider.css" rel="stylesheet">
 		<link href="css/style.css" rel="stylesheet">
-		<title>Furni Free Bootstrap 5 Template for Furniture and Interior Design Websites by Untree.co </title>
+		<title>Checkout - DR FURNITURE PACIFIC</title>
 	</head>
 
 	<body>
 
 		<!-- Start Header/Navigation -->
-		<nav class="custom-navbar navbar navbar navbar-expand-md navbar-dark bg-dark" arial-label="Furni navigation bar">
+		<nav class="custom-navbar navbar navbar navbar-expand-md navbar-dark bg-dark" arial-label="DR FURNITURE PACIFIC navigation bar">
 
 			<div class="container">
-				<a class="navbar-brand" href="index.html">Furni<span>.</span></a>
+				<a class="navbar-brand" href="index.html">DR FURNITURE PACIFIC<span>.</span></a>
 
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni" aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsDRFurniture" aria-controls="navbarsDRFurniture" aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
 				</button>
 
-				<div class="collapse navbar-collapse" id="navbarsFurni">
+				<div class="collapse navbar-collapse" id="navbarsDRFurniture">
 					<ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
 						<li class="nav-item ">
 							<a class="nav-link" href="index.html">Home</a>
 						</li>
-						<li><a class="nav-link" href="shop.html">Shop</a></li>
+						<li><a class="nav-link" href="shop-firebase.html">Shop</a></li>
 						<li><a class="nav-link" href="about.html">About us</a></li>
 						<li><a class="nav-link" href="services.html">Services</a></li>
 						<li><a class="nav-link" href="blog.html">Blog</a></li>
@@ -279,24 +279,16 @@
 		                    <th>Product</th>
 		                    <th>Total</th>
 		                  </thead>
-		                  <tbody>
+		                  <tbody id="orderSummaryBody">
 		                    <tr>
-		                      <td>Top Up T-Shirt <strong class="mx-2">x</strong> 1</td>
-		                      <td>$250.00</td>
-		                    </tr>
-		                    <tr>
-		                      <td>Polo Shirt <strong class="mx-2">x</strong>   1</td>
-		                      <td>$100.00</td>
-		                    </tr>
-		                    <tr>
-		                      <td class="text-black font-weight-bold"><strong>Cart Subtotal</strong></td>
-		                      <td class="text-black">$350.00</td>
-		                    </tr>
-		                    <tr>
-		                      <td class="text-black font-weight-bold"><strong>Order Total</strong></td>
-		                      <td class="text-black font-weight-bold"><strong>$350.00</strong></td>
-		                    </tr>
-		                  </tbody>
+                      <td class="text-black font-weight-bold"><strong>Cart Subtotal</strong></td>
+                      <td class="text-black"><strong id="checkoutSubtotal"></strong></td>
+                    </tr>
+                    <tr>
+                      <td class="text-black font-weight-bold"><strong>Order Total</strong></td>
+                      <td class="text-black font-weight-bold"><strong id="checkoutTotal"></strong></td>
+                    </tr>
+                  </tbody>
 		                </table>
 
 		                <div class="border p-3 mb-3">
@@ -330,8 +322,8 @@
 		                </div>
 
 		                <div class="form-group">
-		                  <button class="btn btn-black btn-lg py-3 btn-block" onclick="window.location='thankyou.html'">Place Order</button>
-		                </div>
+                  <button class="btn btn-black btn-lg py-3 btn-block" id="placeOrderBtn">Place Order</button>
+                </div>
 
 		              </div>
 		            </div>
@@ -376,8 +368,8 @@
 
 				<div class="row g-5 mb-5">
 					<div class="col-lg-4">
-						<div class="mb-4 footer-logo-wrap"><a href="#" class="footer-logo">Furni<span>.</span></a></div>
-						<p class="mb-4">Donec facilisis quam ut purus rutrum lobortis. Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor tristique. Pellentesque habitant</p>
+						<div class="mb-4 footer-logo-wrap"><a href="#" class="footer-logo">DR FURNITURE PACIFIC<span>.</span></a></div>
+						<p class="mb-4">We are dedicated to providing high-quality furniture that combines style, comfort, and durability. Our mission is to help you create beautiful living spaces that reflect your personal style and meet your everyday needs.</p>
 
 						<ul class="list-unstyled custom-social">
 							<li><a href="#"><span class="fa fa-brands fa-facebook-f"></span></a></li>
@@ -417,9 +409,7 @@
 
 							<div class="col-6 col-sm-6 col-md-3">
 								<ul class="list-unstyled">
-									<li><a href="#">Nordic Chair</a></li>
-									<li><a href="#">Kruzo Aero</a></li>
-									<li><a href="#">Ergonomic Chair</a></li>
+		
 								</ul>
 							</div>
 						</div>
@@ -430,7 +420,7 @@
 				<div class="border-top copyright">
 					<div class="row pt-4">
 						<div class="col-lg-6">
-							<p class="mb-2 text-center text-lg-start">Copyright &copy;<script>document.write(new Date().getFullYear());</script>. All Rights Reserved. &mdash; Designed with love by <a href="https://untree.co">Untree.co</a> Distributed By <a hreff="https://themewagon.com">ThemeWagon</a>  <!-- License information: https://untree.co/license/ -->
+							<p class="mb-2 text-center text-lg-start">Copyright &copy;<script>document.write(new Date().getFullYear());</script>. All Rights Reserved. &mdash; Designed by Kelvin Ndungu  <!-- License information: https://untree.co/license/ -->
             </p>
 						</div>
 
@@ -452,6 +442,51 @@
 		<script src="js/bootstrap.bundle.min.js"></script>
 		<script src="js/tiny-slider.js"></script>
 		<script src="js/custom.js"></script>
+		<script>
+			document.addEventListener('DOMContentLoaded', () => {
+				const cart = JSON.parse(localStorage.getItem('cart')) || [];
+				const orderSummaryBody = document.getElementById('orderSummaryBody');
+				const checkoutSubtotal = document.getElementById('checkoutSubtotal');
+				const checkoutTotal = document.getElementById('checkoutTotal');
+				let total = 0;
+
+				if (orderSummaryBody) {
+					// Find the subtotal and total rows to ensure they are not removed
+					const subtotalRow = document.getElementById('checkoutSubtotal').closest('tr');
+
+					// Remove all existing product rows (if any, assuming they are before subtotal/total)
+					// This loop removes elements from the beginning until it hits the subtotal row
+					while (orderSummaryBody.firstChild && orderSummaryBody.firstChild !== subtotalRow) {
+						orderSummaryBody.removeChild(orderSummaryBody.firstChild);
+					}
+
+					if (cart.length === 0) {
+						const emptyRow = document.createElement('tr');
+						emptyRow.innerHTML = `<td colspan="2" class="text-center">Your cart is empty.</td>`;
+						orderSummaryBody.insertBefore(emptyRow, subtotalRow);
+					} else {
+						cart.forEach(item => {
+							const itemTotal = item.price * item.quantity;
+							total += itemTotal;
+							const row = document.createElement('tr');
+							row.innerHTML = `
+								<td>${item.name} <strong class="mx-2">x</strong> ${item.quantity}</td>
+								<td>Ksh${itemTotal.toFixed(2)}</td>
+							`;
+							orderSummaryBody.insertBefore(row, subtotalRow); // Insert before the subtotal row
+						});
+					}
+				}
+
+				if (checkoutSubtotal) {
+					checkoutSubtotal.textContent = `Ksh${total.toFixed(2)}`;
+				}
+				if (checkoutTotal) {
+					checkoutTotal.textContent = `Ksh${total.toFixed(2)}`;
+				}
+			});
+		</script>
+        <script src="js/checkout.js"></script>
 	</body>
 
 </html>
