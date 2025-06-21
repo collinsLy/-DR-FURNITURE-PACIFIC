@@ -52,7 +52,7 @@
 					</ul>
 				</div>
 			</div>
-				
+
 		</nav>
 		<!-- End Header/Navigation -->
 
@@ -66,7 +66,7 @@
 						</div>
 					</div>
 					<div class="col-lg-7">
-						
+
 					</div>
 				</div>
 			</div>
@@ -116,7 +116,7 @@
 						</div>
 						<p class="mt-2">Loading furniture items...</p>
 					</div>
-					
+
 					<div class="col-12 text-center py-5" id="noResultsMessage" style="display: none;">
 						<p>No furniture items match your search criteria. Please try different filters.</p>
 					</div>
@@ -229,30 +229,30 @@
 		</footer>
 		<!-- End Footer Section -->	
 
+		<!-- Floating WhatsApp Button -->
+		<a href="https://wa.me/254743119353" target="_blank" class="floating-whatsapp" title="Chat with us on WhatsApp">
+			<i class="fab fa-whatsapp"></i>
+		</a>
 
-		<!-- Firebase SDK -->
-		<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-		<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-		
 		<script src="js/bootstrap.bundle.min.js"></script>
 		<script src="js/tiny-slider.js"></script>
 		<script src="js/cart.js"></script>
 		<script src="js/custom.js"></script>
 		<script src="js/firebase-integration.js"></script>
-		
+
 		<!-- Shop Page Specific Script -->
 		<script>
 			document.addEventListener('DOMContentLoaded', function() {
 				// Load categories for the filter dropdown
 				loadCategories();
-				
+
 				// Set up event listeners for filters
 				document.getElementById('categoryFilter').addEventListener('change', applyFilters);
 				document.getElementById('priceFilter').addEventListener('change', applyFilters);
 				document.getElementById('searchInput').addEventListener('input', applyFilters);
 				document.getElementById('resetFilters').addEventListener('click', resetFilters);
 			});</script>
-			
+
 			// Function to reset all filters
 			function resetFilters() {
 				document.getElementById('categoryFilter').value = 'all';
@@ -260,29 +260,29 @@
 				document.getElementById('searchInput').value = '';
 				applyFilters();
 			}
-			
+
 			// Function to apply all filters
 			function applyFilters() {
 				const category = document.getElementById('categoryFilter').value;
 				const priceRange = document.getElementById('priceFilter').value;
 				const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-				
+
 				// Show loading indicator
 				document.getElementById('loadingIndicator').style.display = 'block';
 				document.getElementById('noResultsMessage').style.display = 'none';
-				
+
 				// Clear existing furniture items
 				const container = document.getElementById('furnitureContainer');
 				const loadingIndicator = document.getElementById('loadingIndicator');
 				const noResultsMessage = document.getElementById('noResultsMessage');
-				
+
 				// Remove all furniture items but keep the loading indicator and no results message
 				Array.from(container.children).forEach(child => {
 					if (child !== loadingIndicator && child !== noResultsMessage) {
 						container.removeChild(child);
 					}
 				});
-				
+
 				// Get filtered furniture items from Firebase
 				getFilteredFurniture(category, priceRange, searchTerm);
 			}
