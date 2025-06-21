@@ -242,9 +242,6 @@
 		<!-- Shop Page Specific Script -->
 		<script>
 			document.addEventListener('DOMContentLoaded', function() {
-				// Load all furniture items when the page loads
-				loadShopProducts();
-				
 				// Load categories for the filter dropdown
 				loadCategories();
 				
@@ -253,7 +250,7 @@
 				document.getElementById('priceFilter').addEventListener('change', applyFilters);
 				document.getElementById('searchInput').addEventListener('input', applyFilters);
 				document.getElementById('resetFilters').addEventListener('click', resetFilters);
-			});
+			});</script>
 			
 			// Function to reset all filters
 			function resetFilters() {
