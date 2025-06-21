@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -19,7 +18,7 @@
   <!-- Swiper CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css" />
   <title>DR FURNITURE PACIFIC - Furniture Details</title>
-  
+
   <style>
     .image-gallery {
       max-width: 600px;
@@ -108,7 +107,7 @@
         </div>
         <p class="mt-2">Loading furniture details...</p>
       </div>
-      
+
       <div id="furnitureDetail" class="row" style="display: none;">
         <div class="col-md-6">
           <div class="image-gallery">
@@ -123,7 +122,7 @@
             </div>
           </div>
         </div>
-        
+
         <div class="col-md-6">
           <div class="product-details">
             <h2 id="productName">Product Name</h2>
@@ -146,7 +145,7 @@
           </div>
         </div>
       </div>
-      
+
       <div id="notFoundMessage" class="text-center py-5" style="display: none;">
         <h3>Furniture not found</h3>
         <p>The requested furniture item could not be found.</p>
@@ -169,31 +168,31 @@
             <div class="row">
               <div class="col-6">
                 <div class="form-group">
-                  <label class="text-black" for="fname">First name</label>
-                  <input type="text" class="form-control" id="fname" name="fname" required>
+                  <label class="text-black" for="inquiry-fname">First name</label>
+                  <input type="text" class="form-control" id="inquiry-fname" name="fname" required>
                 </div>
               </div>
               <div class="col-6">
                 <div class="form-group">
-                  <label class="text-black" for="lname">Last name</label>
-                  <input type="text" class="form-control" id="lname" name="lname" required>
+                  <label class="text-black" for="inquiry-lname">Last name</label>
+                  <input type="text" class="form-control" id="inquiry-lname" name="lname" required>
                 </div>
               </div>
             </div>
             <div class="form-group">
-              <label class="text-black" for="email">Email address</label>
-              <input type="email" class="form-control" id="email" name="email" required>
+              <label class="text-black" for="inquiry-email">Email address</label>
+              <input type="email" class="form-control" id="inquiry-email" name="email" required>
             </div>
             <div class="form-group">
-              <label class="text-black" for="phone">Phone number</label>
-              <input type="tel" class="form-control" id="phone" name="phone">
+              <label class="text-black" for="inquiry-phone">Phone number</label>
+              <input type="tel" class="form-control" id="inquiry-phone" name="phone">
             </div>
             <div class="form-group mb-5">
-              <label class="text-black" for="message">Message</label>
-              <textarea name="message" class="form-control" id="message" cols="30" rows="5" placeholder="I'm interested in this furniture piece..." required></textarea>
+              <label class="text-black" for="inquiry-message">Message</label>
+              <textarea name="message" class="form-control" id="inquiry-message" cols="30" rows="5" placeholder="I'm interested in this furniture piece..." required></textarea>
             </div>
-            <input type="hidden" id="furnitureId" name="furnitureId">
-            <input type="hidden" id="furnitureName" name="furnitureName">
+            <input type="hidden" id="inquiry-furnitureId" name="furnitureId">
+            <input type="hidden" id="inquiry-furnitureName" name="furnitureName">
           </form>
         </div>
         <div class="modal-footer">
@@ -293,17 +292,17 @@
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  
+
   <!-- Swiper JS -->
   <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
-  
+
   <script src="js/bootstrap.bundle.min.js"></script>
   <script src="js/tiny-slider.js"></script>
   <script src="js/cart.js"></script>
   <script src="js/custom.js"></script>
   <script src="js/toast.js"></script>
   <script src="js/firebase-integration.js"></script>
-  
+
   <script>
     let currentFurniture = null;
     let swiper = null;
@@ -315,7 +314,7 @@
     function loadFurnitureDetail() {
       const urlParams = new URLSearchParams(window.location.search);
       const furnitureId = urlParams.get('id');
-      
+
       if (!furnitureId) {
         showNotFound();
         return;
@@ -332,7 +331,7 @@
           const furniture = doc.data();
           currentFurniture = { id: furnitureId, ...furniture };
           displayFurnitureDetails(furniture);
-          
+
           // Hide loading indicator
           document.getElementById('loadingIndicator').style.display = 'none';
           document.getElementById('furnitureDetail').style.display = 'block';
@@ -354,7 +353,7 @@
       // Setup image gallery
       const imageGallery = document.getElementById('imageGallery');
       const images = furniture.images || [furniture.imageUrl];
-      
+
       imageGallery.innerHTML = '';
       images.forEach(imageUrl => {
         if (imageUrl && imageUrl.trim()) {
@@ -369,7 +368,7 @@
       if (swiper) {
         swiper.destroy(true, true);
       }
-      
+
       swiper = new Swiper('.mySwiper', {
         navigation: {
           nextEl: '.swiper-button-next',
@@ -390,13 +389,12 @@
 
     function openInquiryModal() {
       if (currentFurniture) {
-        document.getElementById('furnitureId').value = currentFurniture.id;
-        document.getElementById('furnitureName').value = currentFurniture.name;
-        
-        // Pre-fill message
+        document.getElementById('inquiry-furnitureId').value = currentFurniture.id;
+        document.getElementById('inquiry-furnitureName').value = currentFurniture.name;
+
         const message = `Hi, I'm interested in the ${currentFurniture.name} (Ksh${currentFurniture.price.toFixed(2)}). Could you please provide more information?`;
-        document.getElementById('message').value = message;
-        
+        document.getElementById('inquiry-message').value = message;
+
         const modal = new bootstrap.Modal(document.getElementById('inquiryModal'));
         modal.show();
       }
@@ -404,16 +402,26 @@
 
     function submitInquiry() {
       const form = document.getElementById('inquiryForm');
-      const formData = new FormData(form);
-      
+
+      // Get form values directly
+      const firstName = document.getElementById('inquiry-fname').value.trim();
+      const lastName = document.getElementById('inquiry-lname').value.trim();
+      const email = document.getElementById('inquiry-email').value.trim();
+      const phone = document.getElementById('inquiry-phone').value.trim();
+      const message = document.getElementById('inquiry-message').value.trim();
+      const furnitureId = document.getElementById('inquiry-furnitureId').value;
+      const furnitureName = document.getElementById('inquiry-furnitureName').value;
+
       // Validate required fields
-      const firstName = formData.get('fname');
-      const lastName = formData.get('lname');
-      const email = formData.get('email');
-      const message = formData.get('message');
-      
       if (!firstName || !lastName || !email || !message) {
         toastError('Please fill in all required fields.');
+        return;
+      }
+
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        toastError('Please enter a valid email address.');
         return;
       }
 
@@ -421,18 +429,24 @@
         firstName: firstName,
         lastName: lastName,
         email: email,
-        phone: formData.get('phone') || '',
+        phone: phone,
         message: message,
-        furnitureId: formData.get('furnitureId'),
-        furnitureName: formData.get('furnitureName'),
+        furnitureId: furnitureId,
+        furnitureName: furnitureName,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       };
+
+      // Disable submit button to prevent double submission
+      const submitBtn = document.querySelector('#inquiryModal .btn-primary');
+      const originalText = submitBtn.textContent;
+      submitBtn.textContent = 'Sending...';
+      submitBtn.disabled = true;
 
       // Save to Firebase
       db.collection('inquiryMessages').add(inquiryData)
         .then(() => {
           toastSuccess('Your inquiry has been sent successfully!');
-          
+
           // Close modal and reset form
           const modal = bootstrap.Modal.getInstance(document.getElementById('inquiryModal'));
           modal.hide();
@@ -441,6 +455,11 @@
         .catch(error => {
           console.error('Error sending inquiry:', error);
           toastError('Error sending inquiry. Please try again.');
+        })
+        .finally(() => {
+          // Re-enable submit button
+          submitBtn.textContent = originalText;
+          submitBtn.disabled = false;
         });
     }
 
@@ -452,7 +471,7 @@
           price: currentFurniture.price,
           imageUrl: currentFurniture.imageUrl || (currentFurniture.images && currentFurniture.images[0])
         };
-        
+
         // Add to cart using the cart.js functionality
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
         const existingProductIndex = cart.findIndex(item => item.id === product.id);
@@ -464,7 +483,7 @@
           cart.push(product);
         }
         localStorage.setItem('cart', JSON.stringify(cart));
-        
+
         toastSuccess(`${product.name} added to cart!`);
       }
     }
