@@ -48,7 +48,17 @@
       background: #3b5d50;
     }
     .inquiry-modal {
-      z-index: 1050;
+      z-index: 1060;
+    }
+    .inquiry-modal .modal-dialog {
+      z-index: 1061;
+    }
+    .inquiry-modal .modal-content {
+      z-index: 1062;
+    }
+    .form-control:focus {
+      border-color: #3b5d50;
+      box-shadow: 0 0 0 0.2rem rgba(59, 93, 80, 0.25);
     }
   </style>
 </head>
@@ -167,29 +177,29 @@
           <form id="inquiryForm">
             <div class="row">
               <div class="col-6">
-                <div class="form-group">
+                <div class="form-group mb-3">
                   <label class="text-black" for="inquiry-fname">First name</label>
-                  <input type="text" class="form-control" id="inquiry-fname" name="fname" required>
+                  <input type="text" class="form-control" id="inquiry-fname" name="fname" required autocomplete="given-name" tabindex="1">
                 </div>
               </div>
               <div class="col-6">
-                <div class="form-group">
+                <div class="form-group mb-3">
                   <label class="text-black" for="inquiry-lname">Last name</label>
-                  <input type="text" class="form-control" id="inquiry-lname" name="lname" required>
+                  <input type="text" class="form-control" id="inquiry-lname" name="lname" required autocomplete="family-name" tabindex="2">
                 </div>
               </div>
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
               <label class="text-black" for="inquiry-email">Email address</label>
-              <input type="email" class="form-control" id="inquiry-email" name="email" required>
+              <input type="email" class="form-control" id="inquiry-email" name="email" required autocomplete="email" tabindex="3">
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
               <label class="text-black" for="inquiry-phone">Phone number</label>
-              <input type="tel" class="form-control" id="inquiry-phone" name="phone">
+              <input type="tel" class="form-control" id="inquiry-phone" name="phone" autocomplete="tel" tabindex="4">
             </div>
             <div class="form-group mb-5">
               <label class="text-black" for="inquiry-message">Message</label>
-              <textarea name="message" class="form-control" id="inquiry-message" cols="30" rows="5" placeholder="I'm interested in this furniture piece..." required></textarea>
+              <textarea name="message" class="form-control" id="inquiry-message" cols="30" rows="5" placeholder="I'm interested in this furniture piece..." required tabindex="5"></textarea>
             </div>
             <input type="hidden" id="inquiry-furnitureId" name="furnitureId">
             <input type="hidden" id="inquiry-furnitureName" name="furnitureName">
@@ -395,8 +405,20 @@
         const message = `Hi, I'm interested in the ${currentFurniture.name} (Ksh${currentFurniture.price.toFixed(2)}). Could you please provide more information?`;
         document.getElementById('inquiry-message').value = message;
 
-        const modal = new bootstrap.Modal(document.getElementById('inquiryModal'));
+        const modal = new bootstrap.Modal(document.getElementById('inquiryModal'), {
+          backdrop: true,
+          keyboard: true,
+          focus: true
+        });
         modal.show();
+
+        // Ensure form fields are focusable after modal is shown
+        setTimeout(() => {
+          const firstInput = document.getElementById('inquiry-fname');
+          if (firstInput) {
+            firstInput.focus();
+          }
+        }, 300);
       }
     }
 
