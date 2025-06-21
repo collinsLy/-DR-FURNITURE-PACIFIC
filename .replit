@@ -10,3 +10,15 @@ run = ["sh", "-c", "npm start"]
 [[ports]]
 localPort = 5000
 externalPort = 5000
+
+[workflows]
+runButton = "Start Server"
+
+[[workflows.workflow]]
+name = "Start Server"
+author = 44103614
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python3 -m http.server 5000 --bind 0.0.0.0"

@@ -73,13 +73,14 @@ function loadPopularProducts() {
       
       snapshot.forEach(doc => {
         const item = doc.data();
+        const mainImage = item.images && item.images.length > 0 ? item.images[0] : item.imageUrl;
         const popularHTML = `
           <div class="col-12 col-md-4 col-lg-4 mb-5 mb-md-0">
-            <a class="product-item" href="#">
-              <img src="${item.imageUrl}" class="img-fluid product-thumbnail">
+            <a class="product-item" href="furniture-detail.html?id=${doc.id}">
+              <img src="${mainImage}" class="img-fluid product-thumbnail">
               <h3 class="product-title">${item.name}</h3>
               <strong class="product-price">Ksh${item.price.toFixed(2)}</strong>
-              <span class="icon-cross add-to-cart-btn" data-id="${doc.id}" data-name="${item.name}" data-price="${item.price}" data-image="${item.imageUrl}">
+              <span class="icon-cross add-to-cart-btn" data-id="${doc.id}" data-name="${item.name}" data-price="${item.price}" data-image="${mainImage}" onclick="event.preventDefault(); event.stopPropagation();">
                 <img src="images/cross.svg" class="img-fluid">
               </span>
             </a>
@@ -129,12 +130,13 @@ function loadShopProducts() {
         const item = doc.data();
         const col = document.createElement('div');
         col.className = 'col-12 col-md-4 col-lg-3 mb-5';
+        const mainImage = item.images && item.images.length > 0 ? item.images[0] : item.imageUrl;
         col.innerHTML = `
-          <a class="product-item" href="#">
-            <img src="${item.imageUrl}" class="img-fluid product-thumbnail">
+          <a class="product-item" href="furniture-detail.html?id=${doc.id}">
+            <img src="${mainImage}" class="img-fluid product-thumbnail">
             <h3 class="product-title">${item.name}</h3>
             <strong class="product-price">Ksh${item.price.toFixed(2)}</strong>
-            <span class="icon-cross add-to-cart-btn" data-id="${doc.id}" data-name="${item.name}" data-price="${item.price}" data-image="${item.imageUrl}">
+            <span class="icon-cross add-to-cart-btn" data-id="${doc.id}" data-name="${item.name}" data-price="${item.price}" data-image="${mainImage}" onclick="event.preventDefault(); event.stopPropagation();">
               <img src="images/cross.svg" class="img-fluid">
             </span>
           </a>
@@ -221,12 +223,13 @@ function getFilteredFurniture(category, priceRange, searchTerm) {
         filteredItems.forEach(item => {
           const col = document.createElement('div');
           col.className = 'col-12 col-md-4 col-lg-3 mb-5';
+          const mainImage = item.images && item.images.length > 0 ? item.images[0] : item.imageUrl;
           col.innerHTML = `
-            <a class="product-item" href="#">
-              <img src="${item.imageUrl}" class="img-fluid product-thumbnail">
+            <a class="product-item" href="furniture-detail.html?id=${item.id}">
+              <img src="${mainImage}" class="img-fluid product-thumbnail">
               <h3 class="product-title">${item.name}</h3>
               <strong class="product-price">Ksh${item.price.toFixed(2)}</strong>
-              <span class="icon-cross add-to-cart-btn" data-id="${doc.id}" data-name="${item.name}" data-price="${item.price}" data-image="${item.imageUrl}">
+              <span class="icon-cross add-to-cart-btn" data-id="${item.id}" data-name="${item.name}" data-price="${item.price}" data-image="${mainImage}" onclick="event.preventDefault(); event.stopPropagation();">
                 <img src="images/cross.svg" class="img-fluid">
               </span>
             </a>
@@ -324,13 +327,14 @@ function loadProductDetails() {
 
 // Create HTML for a single furniture item
 function createFurnitureItemHTML(id, item) {
+  const mainImage = item.images && item.images.length > 0 ? item.images[0] : item.imageUrl;
   return `
     <div class="col-12 col-md-4 col-lg-3 mb-5">
-      <a class="product-item" href="#">
-        <img src="${item.imageUrl}" class="img-fluid product-thumbnail">
+      <a class="product-item" href="furniture-detail.html?id=${id}">
+        <img src="${mainImage}" class="img-fluid product-thumbnail">
         <h3 class="product-title">${item.name}</h3>
         <strong class="product-price">Ksh${item.price.toFixed(2)}</strong>
-        <span class="icon-cross add-to-cart-btn" data-id="${id}" data-name="${item.name}" data-price="${item.price}" data-image="${item.imageUrl}">
+        <span class="icon-cross add-to-cart-btn" data-id="${id}" data-name="${item.name}" data-price="${item.price}" data-image="${mainImage}" onclick="event.preventDefault(); event.stopPropagation();">
           <img src="images/cross.svg" class="img-fluid">
         </span>
       </a>

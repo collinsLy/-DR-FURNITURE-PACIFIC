@@ -1,0 +1,462 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="author" content="Untree.co">
+  <link rel="shortcut icon" href="favicon.png">
+
+  <meta name="description" content="" />
+  <meta name="keywords" content="bootstrap, bootstrap4" />
+
+  <!-- Bootstrap CSS -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <link href="css/tiny-slider.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <link href="css/toast-custom.css" rel="stylesheet">
+  <!-- Swiper CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css" />
+  <title>DR FURNITURE PACIFIC - Furniture Details</title>
+  
+  <style>
+    .image-gallery {
+      max-width: 600px;
+    }
+    .swiper {
+      width: 100%;
+      height: 400px;
+    }
+    .swiper-slide {
+      text-align: center;
+      font-size: 18px;
+      background: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .swiper-slide img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .swiper-button-next, .swiper-button-prev {
+      color: #3b5d50;
+    }
+    .swiper-pagination-bullet-active {
+      background: #3b5d50;
+    }
+    .inquiry-modal {
+      z-index: 1050;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Start Header/Navigation -->
+  <nav class="custom-navbar navbar navbar navbar-expand-md navbar-dark bg-dark" arial-label="DR FURNITURE PACIFIC navigation bar">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">DR FURNITURE PACIFIC<span>.</span></a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsDRFurniture" aria-controls="navbarsDRFurniture" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsDRFurniture">
+        <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
+          <li><a class="nav-link" href="index.html">Home</a></li>
+          <li><a class="nav-link" href="shop-firebase.html">Shop</a></li>
+          <li><a class="nav-link" href="about.html">About us</a></li>
+          <li><a class="nav-link" href="services.html">Services</a></li>
+          <li><a class="nav-link" href="blog.html">Blog</a></li>
+          <li><a class="nav-link" href="contact.html">Contact us</a></li>
+        </ul>
+
+        <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
+          <li><a class="nav-link" href="#"><img src="images/user.svg"></a></li>
+          <li><a class="nav-link" href="cart.html"><img src="images/cart.svg"></a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <!-- End Header/Navigation -->
+
+  <!-- Start Hero Section -->
+  <div class="hero">
+    <div class="container">
+      <div class="row justify-content-between">
+        <div class="col-lg-5">
+          <div class="intro-excerpt">
+            <h1 id="furniture-title">Furniture Details</h1>
+          </div>
+        </div>
+        <div class="col-lg-7"></div>
+      </div>
+    </div>
+  </div>
+  <!-- End Hero Section -->
+
+  <!-- Start Product Detail Section -->
+  <div class="untree_co-section">
+    <div class="container">
+      <div id="loadingIndicator" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2">Loading furniture details...</p>
+      </div>
+      
+      <div id="furnitureDetail" class="row" style="display: none;">
+        <div class="col-md-6">
+          <div class="image-gallery">
+            <!-- Swiper -->
+            <div class="swiper mySwiper">
+              <div class="swiper-wrapper" id="imageGallery">
+                <!-- Images will be loaded here -->
+              </div>
+              <div class="swiper-button-next"></div>
+              <div class="swiper-button-prev"></div>
+              <div class="swiper-pagination"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-md-6">
+          <div class="product-details">
+            <h2 id="productName">Product Name</h2>
+            <p class="product-price h3 text-primary" id="productPrice">Ksh0.00</p>
+            <div class="product-description mt-4">
+              <h5>Description</h5>
+              <p id="productDescription">Product description will appear here.</p>
+            </div>
+            <div class="product-category mt-3">
+              <strong>Category: </strong><span id="productCategory">Category</span>
+            </div>
+            <div class="mt-4">
+              <button class="btn btn-primary btn-lg" onclick="openInquiryModal()">
+                <i class="fas fa-envelope me-2"></i>Inquire Now
+              </button>
+              <button class="btn btn-secondary btn-lg ms-2" onclick="addToCart()">
+                <i class="fas fa-cart-plus me-2"></i>Add to Cart
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="notFoundMessage" class="text-center py-5" style="display: none;">
+        <h3>Furniture not found</h3>
+        <p>The requested furniture item could not be found.</p>
+        <a href="shop-firebase.html" class="btn btn-primary">Back to Shop</a>
+      </div>
+    </div>
+  </div>
+  <!-- End Product Detail Section -->
+
+  <!-- Inquiry Modal -->
+  <div class="modal fade inquiry-modal" id="inquiryModal" tabindex="-1" aria-labelledby="inquiryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="inquiryModalLabel">Inquire About This Furniture</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="inquiryForm">
+            <div class="row">
+              <div class="col-6">
+                <div class="form-group">
+                  <label class="text-black" for="fname">First name</label>
+                  <input type="text" class="form-control" id="fname" name="fname" required>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="form-group">
+                  <label class="text-black" for="lname">Last name</label>
+                  <input type="text" class="form-control" id="lname" name="lname" required>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="text-black" for="email">Email address</label>
+              <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+              <label class="text-black" for="phone">Phone number</label>
+              <input type="tel" class="form-control" id="phone" name="phone">
+            </div>
+            <div class="form-group mb-5">
+              <label class="text-black" for="message">Message</label>
+              <textarea name="message" class="form-control" id="message" cols="30" rows="5" placeholder="I'm interested in this furniture piece..." required></textarea>
+            </div>
+            <input type="hidden" id="furnitureId" name="furnitureId">
+            <input type="hidden" id="furnitureName" name="furnitureName">
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onclick="submitInquiry()">Send Inquiry</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Start Footer Section -->
+  <footer class="footer-section">
+    <div class="container relative">
+      <div class="sofa-img">
+        <img src="images/sofa.png" alt="Image" class="img-fluid">
+      </div>
+
+      <div class="row">
+        <div class="col-lg-8">
+          <div class="subscription-form">
+            <h3 class="d-flex align-items-center"><span class="me-1"><img src="images/envelope-outline.svg" alt="Image" class="img-fluid"></span><span>Subscribe to Newsletter</span></h3>
+            <form action="#" class="row g-3">
+              <div class="col-auto">
+                <input type="text" class="form-control" placeholder="Enter your name">
+              </div>
+              <div class="col-auto">
+                <input type="email" class="form-control" placeholder="Enter your email">
+              </div>
+              <div class="col-auto">
+                <button class="btn btn-primary">
+                  <span class="fa fa-paper-plane"></span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-5 mb-5">
+        <div class="col-lg-4">
+          <div class="mb-4 footer-logo-wrap"><a href="#" class="footer-logo">DR FURNITURE PACIFIC<span>.</span></a></div>
+          <p class="mb-4">We are dedicated to providing high-quality furniture that combines style, comfort, and durability.</p>
+          <ul class="list-unstyled custom-social">
+            <li><a href="#"><span class="fa fa-brands fa-facebook-f"></span></a></li>
+            <li><a href="#"><span class="fa fa-brands fa-twitter"></span></a></li>
+            <li><a href="#"><span class="fa fa-brands fa-instagram"></span></a></li>
+            <li><a href="#"><span class="fa fa-brands fa-linkedin"></span></a></li>
+          </ul>
+        </div>
+
+        <div class="col-lg-8">
+          <div class="row links-wrap">
+            <div class="col-6 col-sm-6 col-md-3">
+              <ul class="list-unstyled">
+                <li><a href="#">About us</a></li>
+                <li><a href="#">Services</a></li>
+                <li><a href="#">Blog</a></li>
+                <li><a href="#">Contact us</a></li>
+              </ul>
+            </div>
+            <div class="col-6 col-sm-6 col-md-3">
+              <ul class="list-unstyled">
+                <li><a href="#">Support</a></li>
+                <li><a href="#">Knowledge base</a></li>
+                <li><a href="#">Live chat</a></li>
+              </ul>
+            </div>
+            <div class="col-6 col-sm-6 col-md-3">
+              <ul class="list-unstyled">
+                <li><a href="#">Jobs</a></li>
+                <li><a href="#">Our team</a></li>
+                <li><a href="#">Leadership</a></li>
+                <li><a href="#">Privacy Policy</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-top copyright">
+        <div class="row pt-4">
+          <div class="col-lg-6">
+            <p class="mb-2 text-center text-lg-start">Copyright &copy;<script>document.write(new Date().getFullYear());</script>. All Rights Reserved. &mdash; Designed by Kelvin Ndungu</p>
+          </div>
+          <div class="col-lg-6 text-center text-lg-end">
+            <ul class="list-unstyled d-inline-flex ms-auto">
+              <li class="me-4"><a href="#">Terms &amp; Conditions</a></li>
+              <li><a href="#">Privacy Policy</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <!-- End Footer Section -->
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  
+  <!-- Swiper JS -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+  
+  <script src="js/bootstrap.bundle.min.js"></script>
+  <script src="js/tiny-slider.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/custom.js"></script>
+  <script src="js/toast.js"></script>
+  <script src="js/firebase-integration.js"></script>
+  
+  <script>
+    let currentFurniture = null;
+    let swiper = null;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      loadFurnitureDetail();
+    });
+
+    function loadFurnitureDetail() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const furnitureId = urlParams.get('id');
+      
+      if (!furnitureId) {
+        showNotFound();
+        return;
+      }
+
+      // Get furniture details from Firebase
+      db.collection('furnitureItems').doc(furnitureId).get()
+        .then(doc => {
+          if (!doc.exists) {
+            showNotFound();
+            return;
+          }
+
+          const furniture = doc.data();
+          currentFurniture = { id: furnitureId, ...furniture };
+          displayFurnitureDetails(furniture);
+          
+          // Hide loading indicator
+          document.getElementById('loadingIndicator').style.display = 'none';
+          document.getElementById('furnitureDetail').style.display = 'block';
+        })
+        .catch(error => {
+          console.error('Error getting furniture details:', error);
+          showNotFound();
+        });
+    }
+
+    function displayFurnitureDetails(furniture) {
+      // Update page title and product info
+      document.getElementById('furniture-title').textContent = furniture.name;
+      document.getElementById('productName').textContent = furniture.name;
+      document.getElementById('productPrice').textContent = `Ksh${furniture.price.toFixed(2)}`;
+      document.getElementById('productDescription').textContent = furniture.description || 'No description available.';
+      document.getElementById('productCategory').textContent = furniture.category || 'Uncategorized';
+
+      // Setup image gallery
+      const imageGallery = document.getElementById('imageGallery');
+      const images = furniture.images || [furniture.imageUrl];
+      
+      imageGallery.innerHTML = '';
+      images.forEach(imageUrl => {
+        if (imageUrl && imageUrl.trim()) {
+          const slide = document.createElement('div');
+          slide.className = 'swiper-slide';
+          slide.innerHTML = `<img src="${imageUrl}" alt="${furniture.name}" />`;
+          imageGallery.appendChild(slide);
+        }
+      });
+
+      // Initialize Swiper
+      if (swiper) {
+        swiper.destroy(true, true);
+      }
+      
+      swiper = new Swiper('.mySwiper', {
+        navigation: {
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev',
+        },
+        pagination: {
+          el: '.swiper-pagination',
+          clickable: true,
+        },
+        loop: images.length > 1,
+      });
+    }
+
+    function showNotFound() {
+      document.getElementById('loadingIndicator').style.display = 'none';
+      document.getElementById('notFoundMessage').style.display = 'block';
+    }
+
+    function openInquiryModal() {
+      if (currentFurniture) {
+        document.getElementById('furnitureId').value = currentFurniture.id;
+        document.getElementById('furnitureName').value = currentFurniture.name;
+        
+        // Pre-fill message
+        const message = `Hi, I'm interested in the ${currentFurniture.name} (Ksh${currentFurniture.price.toFixed(2)}). Could you please provide more information?`;
+        document.getElementById('message').value = message;
+        
+        const modal = new bootstrap.Modal(document.getElementById('inquiryModal'));
+        modal.show();
+      }
+    }
+
+    function submitInquiry() {
+      const form = document.getElementById('inquiryForm');
+      const formData = new FormData(form);
+      
+      // Validate required fields
+      const firstName = formData.get('fname');
+      const lastName = formData.get('lname');
+      const email = formData.get('email');
+      const message = formData.get('message');
+      
+      if (!firstName || !lastName || !email || !message) {
+        toastError('Please fill in all required fields.');
+        return;
+      }
+
+      const inquiryData = {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        phone: formData.get('phone') || '',
+        message: message,
+        furnitureId: formData.get('furnitureId'),
+        furnitureName: formData.get('furnitureName'),
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      // Save to Firebase
+      db.collection('inquiryMessages').add(inquiryData)
+        .then(() => {
+          toastSuccess('Your inquiry has been sent successfully!');
+          
+          // Close modal and reset form
+          const modal = bootstrap.Modal.getInstance(document.getElementById('inquiryModal'));
+          modal.hide();
+          form.reset();
+        })
+        .catch(error => {
+          console.error('Error sending inquiry:', error);
+          toastError('Error sending inquiry. Please try again.');
+        });
+    }
+
+    function addToCart() {
+      if (currentFurniture && window.addToCart) {
+        const product = {
+          id: currentFurniture.id,
+          name: currentFurniture.name,
+          price: currentFurniture.price,
+          imageUrl: currentFurniture.imageUrl || (currentFurniture.images && currentFurniture.images[0])
+        };
+        window.addToCart(product);
+        toastSuccess(`${product.name} added to cart!`);
+      }
+    }
+  </script>
+
+</body>
+</html>

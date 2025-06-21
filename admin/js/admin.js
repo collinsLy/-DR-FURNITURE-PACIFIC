@@ -359,16 +359,97 @@ function loadFurnitureForEdit(id) {
       editFurnitureName.value = furniture.name;
       editFurnitureCategory.value = furniture.category;
       editFurniturePrice.value = furniture.price;
-      editFurnitureImage.value = furniture.imageUrl;
       editFurnitureDescription.value = furniture.description;
       document.getElementById('edit-furniture-featured').checked = furniture.featured || false;
-      editFurniturePreview.src = furniture.imageUrl;
+      
+      // Load images
+      const images = furniture.images || [furniture.imageUrl];
+      loadImagesForEdit(images);
+      
+      // Set preview image
+      editFurniturePreview.src = images[0] || furniture.imageUrl;
 
       navigateTo('edit-furniture');
     } else {
       showNotification('Furniture item not found', 'error');
     }
   });
+}
+
+function loadImagesForEdit(images) {
+  const container = document.getElementById('edit-image-inputs');
+  container.innerHTML = '';
+  
+  images.forEach((imageUrl, index) => {
+    if (imageUrl && imageUrl.trim()) {
+      const inputGroup = document.createElement('div');
+      inputGroup.className = 'image-input-group mb-2 flex';
+      
+      if (index === 0) {
+        inputGroup.innerHTML = `
+          <input type="url" name="imageUrl" placeholder="Main image URL" required value="${imageUrl}" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+        `;
+      } else {
+        inputGroup.innerHTML = `
+          <input type="url" name="imageUrl" placeholder="Additional image URL" value="${imageUrl}" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+          <button type="button" class="ml-2 text-red-600 hover:text-red-900 remove-image-btn" onclick="removeImageInput(this)">
+            <i class="fas fa-trash-alt"></i>
+          </button>
+        `;
+      }
+      
+      container.appendChild(inputGroup);
+    }
+  });
+  
+  // Ensure at least one input exists
+  if (container.children.length === 0) {
+    resetImageInputs('edit-image-inputs');
+  }
+}
+
+// Add multiple image input functionality
+document.addEventListener('DOMContentLoaded', () => {
+  // Add image input for add form
+  document.getElementById('add-image-btn').addEventListener('click', () => {
+    addImageInput('image-inputs');
+  });
+  
+  // Add image input for edit form
+  document.getElementById('edit-add-image-btn').addEventListener('click', () => {
+    addImageInput('edit-image-inputs');
+  });
+});
+
+function addImageInput(containerId) {
+  const container = document.getElementById(containerId);
+  const inputGroup = document.createElement('div');
+  inputGroup.className = 'image-input-group mb-2 flex';
+  inputGroup.innerHTML = `
+    <input type="url" name="imageUrl" placeholder="Additional image URL" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+    <button type="button" class="ml-2 text-red-600 hover:text-red-900 remove-image-btn" onclick="removeImageInput(this)">
+      <i class="fas fa-trash-alt"></i>
+    </button>
+  `;
+  container.appendChild(inputGroup);
+}
+
+function removeImageInput(button) {
+  button.closest('.image-input-group').remove();
+}
+
+function collectImageUrls(containerId) {
+  const container = document.getElementById(containerId);
+  const inputs = container.querySelectorAll('input[name="imageUrl"]');
+  const urls = [];
+  
+  inputs.forEach(input => {
+    if (input.value.trim()) {
+      urls.push(input.value.trim());
+    }
+  });
+  
+  return urls;
 }
 
 // Add furniture form submission
@@ -378,21 +459,27 @@ addFurnitureForm.addEventListener('submit', e => {
   const name = document.getElementById('furniture-name').value;
   const category = document.getElementById('furniture-category').value;
   const price = parseFloat(document.getElementById('furniture-price').value);
-  const imageUrl = document.getElementById('furniture-image').value;
+  const images = collectImageUrls('image-inputs');
   const description = document.getElementById('furniture-description').value;
   const featured = document.getElementById('furniture-featured').checked;
+
+  // Keep backward compatibility
+  const imageUrl = images.length > 0 ? images[0] : '';
 
   db.collection('furnitureItems').add({
     name,
     category,
     price,
     imageUrl,
+    images,
     description,
     featured,
     timestamp: firebase.firestore.FieldValue.serverTimestamp()
   })
   .then(() => {
     addFurnitureForm.reset();
+    // Reset image inputs to just one
+    resetImageInputs('image-inputs');
     showNotification('Furniture added successfully');
     navigateTo('furniture-list');
   })
@@ -400,6 +487,15 @@ addFurnitureForm.addEventListener('submit', e => {
     showNotification('Error adding furniture: ' + error.message, 'error');
   });
 });
+
+function resetImageInputs(containerId) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = `
+    <div class="image-input-group mb-2">
+      <input type="url" name="imageUrl" placeholder="Main image URL" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+    </div>
+  `;
+}
 
 // Edit furniture form submission
 editFurnitureForm.addEventListener('submit', e => {
@@ -409,15 +505,19 @@ editFurnitureForm.addEventListener('submit', e => {
   const name = editFurnitureName.value;
   const category = editFurnitureCategory.value;
   const price = parseFloat(editFurniturePrice.value);
-  const imageUrl = editFurnitureImage.value;
+  const images = collectImageUrls('edit-image-inputs');
   const description = editFurnitureDescription.value;
   const featured = document.getElementById('edit-furniture-featured').checked;
+
+  // Keep backward compatibility
+  const imageUrl = images.length > 0 ? images[0] : '';
 
   db.collection('furnitureItems').doc(id).update({
     name,
     category,
     price,
     imageUrl,
+    images,
     description,
     featured,
     timestamp: firebase.firestore.FieldValue.serverTimestamp()
