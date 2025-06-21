@@ -1,7 +1,7 @@
 /* Admin Dashboard Styles */
 
 :root {
-  --primary-color: #3b5d50;
+  --primary-color: #3F6054;
   --secondary-color: #f9bf29;
   --dark-color: #2f2f2f;
   --light-color: #eff2f1;
@@ -57,7 +57,7 @@ body {
 }
 
 .login-form button:hover {
-  background-color: #314d43;
+  background-color: #35544a;
 }
 
 /* Dashboard Layout */
@@ -346,7 +346,7 @@ textarea.form-control {
 }
 
 .btn-primary:hover {
-  background-color: #314d43;
+  background-color: #35544a;
 }
 
 .btn-secondary {
