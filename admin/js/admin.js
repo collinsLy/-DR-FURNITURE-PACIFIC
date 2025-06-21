@@ -61,7 +61,12 @@ auth.onAuthStateChanged(user => {
     loginScreen.classList.add('hidden');
     adminDashboard.classList.remove('hidden');
     adminEmail.textContent = user.email;
-    loadDashboard();
+    
+    // Create inquiry messages page if it doesn't exist
+    createInquiryMessagesPage();
+    
+    // Load dashboard by default
+    navigateTo('dashboard');
   } else {
     // User is signed out
     loginScreen.classList.remove('hidden');
@@ -128,22 +133,94 @@ mobileNavLinks.forEach(link => {
 
 // Navigation function
 function navigateTo(page) {
+  // Hide all pages
+  const allPages = document.querySelectorAll('.page-content');
+  allPages.forEach(p => p.classList.add('hidden'));
+
+  // Update page title
+  const pageTitles = {
+    'dashboard': 'Dashboard',
+    'furniture-list': 'Furniture List',
+    'add-furniture': 'Add Furniture',
+    'edit-furniture': 'Edit Furniture',
+    'inquiry-messages': 'Inquiry Messages'
+  };
+
+  if (pageTitle) {
+    pageTitle.textContent = pageTitles[page] || 'Dashboard';
+  }
+
+  // Show selected page
   switch(page) {
-    case 'inquiry-messages':
-      window.location.href = 'inquiry-messages.html';
-      break;
     case 'dashboard':
-      window.location.href = 'index.html';
+      if (dashboardPage) {
+        dashboardPage.classList.remove('hidden');
+        loadDashboard();
+      }
       break;
     case 'furniture-list':
-      window.location.href = 'index.html#furniture-list';
+      if (furnitureListPage) {
+        furnitureListPage.classList.remove('hidden');
+        loadFurnitureList();
+      }
       break;
     case 'add-furniture':
-      window.location.href = 'index.html#add-furniture';
+      if (addFurniturePage) {
+        addFurniturePage.classList.remove('hidden');
+      }
       break;
     case 'edit-furniture':
-      window.location.href = 'index.html#edit-furniture';
+      if (editFurniturePage) {
+        editFurniturePage.classList.remove('hidden');
+      }
       break;
+    case 'inquiry-messages':
+      if (inquiryMessagesPage) {
+        inquiryMessagesPage.classList.remove('hidden');
+        loadInquiryMessages();
+      }
+      break;
+  }
+}
+
+// Create inquiry messages page if it doesn't exist
+function createInquiryMessagesPage() {
+  if (!inquiryMessagesPage) {
+    const mainContent = document.querySelector('main');
+    if (mainContent) {
+      const inquiryDiv = document.createElement('div');
+      inquiryDiv.id = 'inquiry-messages-page';
+      inquiryDiv.className = 'page-content hidden';
+      inquiryDiv.innerHTML = `
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+          <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+            <h2 class="text-lg font-medium text-gray-900">Inquiry Messages</h2>
+            <button id="refresh-messages" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+              <i class="fas fa-sync-alt mr-2"></i> Refresh
+            </button>
+          </div>
+          <div class="p-6">
+            <div id="inquiryMessagesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <!-- Inquiry messages will be loaded here -->
+              <div class="text-center text-gray-500 py-4">Loading messages...</div>
+            </div>
+          </div>
+        </div>
+      `;
+      mainContent.appendChild(inquiryDiv);
+      
+      // Update global reference
+      window.inquiryMessagesPage = inquiryDiv;
+      
+      // Add refresh button event listener
+      const refreshBtn = inquiryDiv.querySelector('#refresh-messages');
+      if (refreshBtn) {
+        refreshBtn.addEventListener('click', () => {
+          loadInquiryMessages();
+          showNotification('Messages refreshed');
+        });
+      }
+    }
   }
 }
 
@@ -419,12 +496,12 @@ function loadInquiryMessages() {
   const inquiryMessagesContainer = document.getElementById('inquiryMessagesContainer');
   if (!inquiryMessagesContainer) return;
 
-  inquiryMessagesContainer.innerHTML = '<div class="col-12 text-center"><p>Loading messages...</p></div>';
+  inquiryMessagesContainer.innerHTML = '<div class="text-center text-gray-500 py-4">Loading messages...</div>';
 
   db.collection('inquiryMessages').orderBy('timestamp', 'desc').get()
     .then(snapshot => {
       if (snapshot.empty) {
-        inquiryMessagesContainer.innerHTML = '<div class="col-12 text-center"><p>No inquiry messages found.</p></div>';
+        inquiryMessagesContainer.innerHTML = '<div class="text-center text-gray-500 py-4">No inquiry messages found.</div>';
         return;
       }
 
@@ -435,21 +512,21 @@ function loadInquiryMessages() {
         const formattedDate = date.toLocaleString();
 
         const messageCard = document.createElement('div');
-        messageCard.className = 'col-md-6 col-lg-4 mb-4';
+        messageCard.className = 'bg-white rounded-lg shadow overflow-hidden';
         messageCard.innerHTML = `
-          <div class="card h-100">
-            <div class="card-body">
-              <h5 class="card-title">${message.firstName} ${message.lastName}</h5>
-              <h6 class="card-subtitle mb-2 text-muted">${message.email}</h6>
-              <p class="card-text">${message.message}</p>
-              <div class="card-footer bg-transparent border-0">
-                <small class="text-muted">
-                  <i class="far fa-clock"></i> ${formattedDate}
-                </small>
-                <button class="btn btn-sm btn-danger float-right delete-message" data-id="${doc.id}">
-                  <i class="fas fa-trash"></i>
-                </button>
+          <div class="p-6">
+            <div class="flex justify-between items-start mb-4">
+              <div>
+                <h3 class="text-lg font-medium text-gray-900">${message.firstName || 'N/A'} ${message.lastName || ''}</h3>
+                <p class="text-sm text-gray-500">${message.email || 'No email'}</p>
               </div>
+              <button class="text-red-600 hover:text-red-900 delete-message" data-id="${doc.id}">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+            <p class="text-gray-700 mb-4">${message.message || 'No message'}</p>
+            <div class="text-xs text-gray-400">
+              <i class="far fa-clock mr-1"></i> ${formattedDate}
             </div>
           </div>
         `;
@@ -464,7 +541,7 @@ function loadInquiryMessages() {
     .catch(error => {
       console.error("Error loading inquiry messages: ", error);
       inquiryMessagesContainer.innerHTML = 
-        '<div class="col-12"><div class="alert alert-danger">Error loading messages. Please try again.</div></div>';
+        '<div class="text-center text-red-500 py-4">Error loading messages. Please try again.</div>';
     });
 }
 
@@ -483,30 +560,17 @@ function deleteMessage(messageId) {
   }
 }
 
-// Initialize the dashboard on load
-function navigateToDefaultPage() {
-  // Check if user is authenticated
-  const user = auth.currentUser;
-  if (user) {
-    navigateTo('dashboard');
-  }
-}
-
-// Add event listener for refresh button
+// Update page references after DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-  const refreshButton = document.getElementById('refresh-messages');
-  if (refreshButton) {
-    refreshButton.addEventListener('click', () => {
+  // Update global page references
+  window.inquiryMessagesPage = document.getElementById('inquiry-messages-page');
+  
+  // Add refresh messages button event listener
+  const refreshBtn = document.getElementById('refresh-messages');
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', () => {
       loadInquiryMessages();
       showNotification('Messages refreshed');
     });
   }
-
-  // Load messages if we're on the inquiry messages page
-  if (document.getElementById('inquiry-messages-page')) {
-    loadInquiryMessages();
-  }
-
-  // Initialize the dashboard
-  navigateToDefaultPage();
 });

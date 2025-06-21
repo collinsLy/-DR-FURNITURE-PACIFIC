@@ -314,6 +314,24 @@
             </div>
           </div>
 
+          <!-- Inquiry Messages Page -->
+          <div id="inquiry-messages-page" class="page-content hidden">
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+              <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h2 class="text-lg font-medium text-gray-900">Inquiry Messages</h2>
+                <button id="refresh-messages" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                  <i class="fas fa-sync-alt mr-2"></i> Refresh
+                </button>
+              </div>
+              <div class="p-6">
+                <div id="inquiryMessagesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <!-- Inquiry messages will be loaded here -->
+                  <div class="text-center text-gray-500 py-4">Loading messages...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Edit Furniture Page -->
           <div id="edit-furniture-page" class="page-content hidden">
             <div class="bg-white rounded-lg shadow overflow-hidden">
