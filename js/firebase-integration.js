@@ -367,9 +367,10 @@ document.addEventListener('DOMContentLoaded', () => {
       };
       if (window.addToCart) {
         window.addToCart(product);
-        alert(`${product.name} added to cart!`);
+        toastSuccess(`${product.name} added to cart!`);
       } else {
         console.error('addToCart function not found. Make sure cart.js is loaded.');
+        toastError('Error adding item to cart. Please try again.');
       }
     }
   });
