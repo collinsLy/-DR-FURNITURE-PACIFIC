@@ -47,6 +47,66 @@
     .swiper-pagination-bullet-active {
       background: #3b5d50;
     }
+
+    function displayFurnitureMedia(furniture) {
+      const swiperWrapper = document.querySelector('.swiper-wrapper');
+      if (!swiperWrapper) return;
+      
+      swiperWrapper.innerHTML = '';
+      
+      let mediaItems = [];
+      
+      // Check for new media format
+      if (furniture.mediaData && furniture.mediaData.length > 0) {
+        mediaItems = furniture.mediaData;
+      } else {
+        // Legacy format - treat as images
+        const images = furniture.images || [furniture.imageUrl];
+        mediaItems = images.filter(url => url && url.trim()).map(url => ({
+          url: url,
+          type: 'image'
+        }));
+      }
+      
+      // Create slides for each media item
+      mediaItems.forEach((media, index) => {
+        const slide = document.createElement('div');
+        slide.className = 'swiper-slide';
+        
+        if (media.type === 'video') {
+          slide.innerHTML = `
+            <video src="${media.url}" class="w-100 h-100 object-cover" controls style="max-height: 500px;">
+              Your browser does not support the video tag.
+            </video>
+          `;
+        } else {
+          slide.innerHTML = `
+            <img src="${media.url}" alt="${furniture.name}" class="w-100 h-100 object-cover" style="max-height: 500px;">
+          `;
+        }
+        
+        swiperWrapper.appendChild(slide);
+      });
+      
+      // Initialize or update Swiper
+      if (swiper) {
+        swiper.destroy(true, true);
+      }
+      
+      swiper = new Swiper('.swiper-container', {
+        loop: mediaItems.length > 1,
+        pagination: {
+          el: '.swiper-pagination',
+          clickable: true,
+        },
+        navigation: {
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev',
+        },
+      });
+    }
+
+
     .inquiry-modal {
       z-index: 1060;
     }
@@ -357,7 +417,10 @@
       document.getElementById('furniture-title').textContent = furniture.name;
       document.getElementById('productName').textContent = furniture.name;
       document.getElementById('productPrice').textContent = `Ksh${furniture.price.toFixed(2)}`;
-      document.getElementById('productDescription').textContent = furniture.description || 'No description available.';
+      document.getElementById('productDescription').textContent = furniture.description;
+      
+      // Handle media display (images and videos)
+      displayFurnitureMedia(furniture);ion || 'No description available.';
       document.getElementById('productCategory').textContent = furniture.category || 'Uncategorized';
 
       // Setup image gallery

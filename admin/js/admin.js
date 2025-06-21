@@ -362,12 +362,11 @@ function loadFurnitureForEdit(id) {
       editFurnitureDescription.value = furniture.description;
       document.getElementById('edit-furniture-featured').checked = furniture.featured || false;
       
-      // Load images
-      const images = furniture.images || [furniture.imageUrl];
-      loadImagesForEdit(images);
+      // Load media
+      loadImagesForEdit(furniture);
       
-      // Set preview image
-      editFurniturePreview.src = images[0] || furniture.imageUrl;
+      // Set preview based on media type
+      setPreviewMedia(furniture);
 
       navigateTo('edit-furniture');
     } else {
@@ -376,31 +375,74 @@ function loadFurnitureForEdit(id) {
   });
 }
 
-function loadImagesForEdit(images) {
+function loadImagesForEdit(furniture) {
   const container = document.getElementById('edit-image-inputs');
   container.innerHTML = '';
   
-  images.forEach((imageUrl, index) => {
-    if (imageUrl && imageUrl.trim()) {
-      const inputGroup = document.createElement('div');
-      inputGroup.className = 'image-input-group mb-2 flex';
-      
-      if (index === 0) {
-        inputGroup.innerHTML = `
-          <input type="url" name="imageUrl" placeholder="Main image URL" required value="${imageUrl}" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-        `;
-      } else {
-        inputGroup.innerHTML = `
-          <input type="url" name="imageUrl" placeholder="Additional image URL" value="${imageUrl}" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-          <button type="button" class="ml-2 text-red-600 hover:text-red-900 remove-image-btn" onclick="removeImageInput(this)">
-            <i class="fas fa-trash-alt"></i>
-          </button>
-        `;
+  // Handle new media format if available
+  if (furniture.mediaData && furniture.mediaData.length > 0) {
+    furniture.mediaData.forEach((media, index) => {
+      if (media.url && media.url.trim()) {
+        const inputGroup = document.createElement('div');
+        inputGroup.className = 'image-input-group mb-2 flex';
+        
+        if (index === 0) {
+          inputGroup.innerHTML = `
+            <input type="url" name="imageUrl" placeholder="Main image/video URL" required value="${media.url}" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+            <select name="mediaType" class="ml-2 mt-1 block w-32 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+              <option value="image" ${media.type === 'image' ? 'selected' : ''}>Image</option>
+              <option value="video" ${media.type === 'video' ? 'selected' : ''}>Video</option>
+            </select>
+          `;
+        } else {
+          inputGroup.innerHTML = `
+            <input type="url" name="imageUrl" placeholder="Additional image/video URL" value="${media.url}" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+            <select name="mediaType" class="ml-2 mt-1 block w-32 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+              <option value="image" ${media.type === 'image' ? 'selected' : ''}>Image</option>
+              <option value="video" ${media.type === 'video' ? 'selected' : ''}>Video</option>
+            </select>
+            <button type="button" class="ml-2 text-red-600 hover:text-red-900 remove-image-btn" onclick="removeImageInput(this)">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          `;
+        }
+        
+        container.appendChild(inputGroup);
       }
-      
-      container.appendChild(inputGroup);
-    }
-  });
+    });
+  } else {
+    // Handle legacy format - treat as images
+    const images = furniture.images || [furniture.imageUrl];
+    images.forEach((imageUrl, index) => {
+      if (imageUrl && imageUrl.trim()) {
+        const inputGroup = document.createElement('div');
+        inputGroup.className = 'image-input-group mb-2 flex';
+        
+        if (index === 0) {
+          inputGroup.innerHTML = `
+            <input type="url" name="imageUrl" placeholder="Main image/video URL" required value="${imageUrl}" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+            <select name="mediaType" class="ml-2 mt-1 block w-32 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+              <option value="image" selected>Image</option>
+              <option value="video">Video</option>
+            </select>
+          `;
+        } else {
+          inputGroup.innerHTML = `
+            <input type="url" name="imageUrl" placeholder="Additional image/video URL" value="${imageUrl}" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+            <select name="mediaType" class="ml-2 mt-1 block w-32 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+              <option value="image" selected>Image</option>
+              <option value="video">Video</option>
+            </select>
+            <button type="button" class="ml-2 text-red-600 hover:text-red-900 remove-image-btn" onclick="removeImageInput(this)">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          `;
+        }
+        
+        container.appendChild(inputGroup);
+      }
+    });
+  }
   
   // Ensure at least one input exists
   if (container.children.length === 0) {
@@ -426,7 +468,11 @@ function addImageInput(containerId) {
   const inputGroup = document.createElement('div');
   inputGroup.className = 'image-input-group mb-2 flex';
   inputGroup.innerHTML = `
-    <input type="url" name="imageUrl" placeholder="Additional image URL" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+    <input type="url" name="imageUrl" placeholder="Additional image/video URL" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+    <select name="mediaType" class="ml-2 mt-1 block w-32 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+      <option value="image">Image</option>
+      <option value="video">Video</option>
+    </select>
     <button type="button" class="ml-2 text-red-600 hover:text-red-900 remove-image-btn" onclick="removeImageInput(this)">
       <i class="fas fa-trash-alt"></i>
     </button>
@@ -440,16 +486,22 @@ function removeImageInput(button) {
 
 function collectImageUrls(containerId) {
   const container = document.getElementById(containerId);
-  const inputs = container.querySelectorAll('input[name="imageUrl"]');
-  const urls = [];
+  const inputGroups = container.querySelectorAll('.image-input-group');
+  const mediaData = [];
   
-  inputs.forEach(input => {
-    if (input.value.trim()) {
-      urls.push(input.value.trim());
+  inputGroups.forEach(group => {
+    const urlInput = group.querySelector('input[name="imageUrl"]');
+    const typeSelect = group.querySelector('select[name="mediaType"]');
+    
+    if (urlInput && urlInput.value.trim()) {
+      mediaData.push({
+        url: urlInput.value.trim(),
+        type: typeSelect ? typeSelect.value : 'image'
+      });
     }
   });
   
-  return urls;
+  return mediaData;
 }
 
 // Add furniture form submission
@@ -459,12 +511,14 @@ addFurnitureForm.addEventListener('submit', e => {
   const name = document.getElementById('furniture-name').value;
   const category = document.getElementById('furniture-category').value;
   const price = parseFloat(document.getElementById('furniture-price').value);
-  const images = collectImageUrls('image-inputs');
+  const mediaData = collectImageUrls('image-inputs');
   const description = document.getElementById('furniture-description').value;
   const featured = document.getElementById('furniture-featured').checked;
 
-  // Keep backward compatibility
-  const imageUrl = images.length > 0 ? images[0] : '';
+  // Keep backward compatibility and create separate arrays
+  const images = mediaData.filter(media => media.type === 'image').map(media => media.url);
+  const videos = mediaData.filter(media => media.type === 'video').map(media => media.url);
+  const imageUrl = images.length > 0 ? images[0] : (videos.length > 0 ? videos[0] : '');
 
   db.collection('furnitureItems').add({
     name,
@@ -472,6 +526,8 @@ addFurnitureForm.addEventListener('submit', e => {
     price,
     imageUrl,
     images,
+    videos,
+    mediaData,
     description,
     featured,
     timestamp: firebase.firestore.FieldValue.serverTimestamp()
@@ -491,10 +547,40 @@ addFurnitureForm.addEventListener('submit', e => {
 function resetImageInputs(containerId) {
   const container = document.getElementById(containerId);
   container.innerHTML = `
-    <div class="image-input-group mb-2">
-      <input type="url" name="imageUrl" placeholder="Main image URL" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+    <div class="image-input-group mb-2 flex">
+      <input type="url" name="imageUrl" placeholder="Main image/video URL" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+      <select name="mediaType" class="ml-2 mt-1 block w-32 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+        <option value="image">Image</option>
+        <option value="video">Video</option>
+      </select>
     </div>
   `;
+}
+
+function setPreviewMedia(furniture) {
+  const imagePreview = document.getElementById('edit-furniture-preview');
+  const videoPreview = document.getElementById('edit-furniture-video-preview');
+  
+  // Hide both previews initially
+  imagePreview.classList.add('hidden');
+  videoPreview.classList.add('hidden');
+  
+  // Check if we have new media format
+  if (furniture.mediaData && furniture.mediaData.length > 0) {
+    const firstMedia = furniture.mediaData[0];
+    if (firstMedia.type === 'video') {
+      videoPreview.src = firstMedia.url;
+      videoPreview.classList.remove('hidden');
+    } else {
+      imagePreview.src = firstMedia.url;
+      imagePreview.classList.remove('hidden');
+    }
+  } else {
+    // Legacy format - assume it's an image
+    const imageUrl = furniture.images && furniture.images.length > 0 ? furniture.images[0] : furniture.imageUrl;
+    imagePreview.src = imageUrl;
+    imagePreview.classList.remove('hidden');
+  }
 }
 
 // Edit furniture form submission
@@ -505,12 +591,14 @@ editFurnitureForm.addEventListener('submit', e => {
   const name = editFurnitureName.value;
   const category = editFurnitureCategory.value;
   const price = parseFloat(editFurniturePrice.value);
-  const images = collectImageUrls('edit-image-inputs');
+  const mediaData = collectImageUrls('edit-image-inputs');
   const description = editFurnitureDescription.value;
   const featured = document.getElementById('edit-furniture-featured').checked;
 
-  // Keep backward compatibility
-  const imageUrl = images.length > 0 ? images[0] : '';
+  // Keep backward compatibility and create separate arrays
+  const images = mediaData.filter(media => media.type === 'image').map(media => media.url);
+  const videos = mediaData.filter(media => media.type === 'video').map(media => media.url);
+  const imageUrl = images.length > 0 ? images[0] : (videos.length > 0 ? videos[0] : '');
 
   db.collection('furnitureItems').doc(id).update({
     name,
@@ -518,6 +606,8 @@ editFurnitureForm.addEventListener('submit', e => {
     price,
     imageUrl,
     images,
+    videos,
+    mediaData,
     description,
     featured,
     timestamp: firebase.firestore.FieldValue.serverTimestamp()
