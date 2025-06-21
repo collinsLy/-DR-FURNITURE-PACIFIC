@@ -61,10 +61,10 @@ auth.onAuthStateChanged(user => {
     loginScreen.classList.add('hidden');
     adminDashboard.classList.remove('hidden');
     adminEmail.textContent = user.email;
-    
+
     // Create inquiry messages page if it doesn't exist
     createInquiryMessagesPage();
-    
+
     // Load dashboard by default
     navigateTo('dashboard');
   } else {
@@ -208,10 +208,10 @@ function createInquiryMessagesPage() {
         </div>
       `;
       mainContent.appendChild(inquiryDiv);
-      
+
       // Update global reference
       window.inquiryMessagesPage = inquiryDiv;
-      
+
       // Add refresh button event listener
       const refreshBtn = inquiryDiv.querySelector('#refresh-messages');
       if (refreshBtn) {
@@ -361,10 +361,10 @@ function loadFurnitureForEdit(id) {
       editFurniturePrice.value = furniture.price;
       editFurnitureDescription.value = furniture.description;
       document.getElementById('edit-furniture-featured').checked = furniture.featured || false;
-      
+
       // Load media
       loadImagesForEdit(furniture);
-      
+
       // Set preview based on media type
       setPreviewMedia(furniture);
 
@@ -378,14 +378,14 @@ function loadFurnitureForEdit(id) {
 function loadImagesForEdit(furniture) {
   const container = document.getElementById('edit-image-inputs');
   container.innerHTML = '';
-  
+
   // Handle new media format if available
   if (furniture.mediaData && furniture.mediaData.length > 0) {
     furniture.mediaData.forEach((media, index) => {
       if (media.url && media.url.trim()) {
         const inputGroup = document.createElement('div');
         inputGroup.className = 'image-input-group mb-2 flex';
-        
+
         if (index === 0) {
           inputGroup.innerHTML = `
             <input type="url" name="imageUrl" placeholder="Main image/video URL" required value="${media.url}" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
@@ -406,7 +406,7 @@ function loadImagesForEdit(furniture) {
             </button>
           `;
         }
-        
+
         container.appendChild(inputGroup);
       }
     });
@@ -417,7 +417,7 @@ function loadImagesForEdit(furniture) {
       if (imageUrl && imageUrl.trim()) {
         const inputGroup = document.createElement('div');
         inputGroup.className = 'image-input-group mb-2 flex';
-        
+
         if (index === 0) {
           inputGroup.innerHTML = `
             <input type="url" name="imageUrl" placeholder="Main image/video URL" required value="${imageUrl}" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
@@ -438,12 +438,12 @@ function loadImagesForEdit(furniture) {
             </button>
           `;
         }
-        
+
         container.appendChild(inputGroup);
       }
     });
   }
-  
+
   // Ensure at least one input exists
   if (container.children.length === 0) {
     resetImageInputs('edit-image-inputs');
@@ -456,7 +456,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('add-image-btn').addEventListener('click', () => {
     addImageInput('image-inputs');
   });
-  
+
   // Add image input for edit form
   document.getElementById('edit-add-image-btn').addEventListener('click', () => {
     addImageInput('edit-image-inputs');
@@ -488,11 +488,11 @@ function collectImageUrls(containerId) {
   const container = document.getElementById(containerId);
   const inputGroups = container.querySelectorAll('.image-input-group');
   const mediaData = [];
-  
+
   inputGroups.forEach(group => {
     const urlInput = group.querySelector('input[name="imageUrl"]');
     const typeSelect = group.querySelector('select[name="mediaType"]');
-    
+
     if (urlInput && urlInput.value.trim()) {
       mediaData.push({
         url: urlInput.value.trim(),
@@ -500,7 +500,7 @@ function collectImageUrls(containerId) {
       });
     }
   });
-  
+
   return mediaData;
 }
 
@@ -511,7 +511,28 @@ addFurnitureForm.addEventListener('submit', e => {
   const name = document.getElementById('furniture-name').value;
   const category = document.getElementById('furniture-category').value;
   const price = parseFloat(document.getElementById('furniture-price').value);
-  const mediaData = collectImageUrls('image-inputs');
+  // Collect image URLs and types
+    const imageInputs = document.querySelectorAll('#image-inputs input[name="imageUrl"]');
+    const mediaTypeSelects = document.querySelectorAll('#image-inputs select[name="mediaType"]');
+
+    const mediaData = [];
+    const images = []; // Keep for backward compatibility
+
+    imageInputs.forEach((input, index) => {
+      if (input.value.trim()) {
+        const mediaType = mediaTypeSelects[index] ? mediaTypeSelects[index].value : 'image';
+        const mediaItem = {
+          url: input.value.trim(),
+          type: mediaType
+        };
+        mediaData.push(mediaItem);
+        images.push(input.value.trim()); // Backward compatibility
+
+        console.log('Adding media item:', mediaItem);
+      }
+    });
+
+    console.log('Total media items:', mediaData.length);
   const description = document.getElementById('furniture-description').value;
   const featured = document.getElementById('furniture-featured').checked;
 
@@ -560,11 +581,11 @@ function resetImageInputs(containerId) {
 function setPreviewMedia(furniture) {
   const imagePreview = document.getElementById('edit-furniture-preview');
   const videoPreview = document.getElementById('edit-furniture-video-preview');
-  
+
   // Hide both previews initially
   imagePreview.classList.add('hidden');
   videoPreview.classList.add('hidden');
-  
+
   // Check if we have new media format
   if (furniture.mediaData && furniture.mediaData.length > 0) {
     const firstMedia = furniture.mediaData[0];
@@ -755,7 +776,7 @@ function deleteMessage(messageId) {
 document.addEventListener('DOMContentLoaded', () => {
   // Update global page references
   window.inquiryMessagesPage = document.getElementById('inquiry-messages-page');
-  
+
   // Add refresh messages button event listener
   const refreshBtn = document.getElementById('refresh-messages');
   if (refreshBtn) {

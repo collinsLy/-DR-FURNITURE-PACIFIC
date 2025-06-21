@@ -50,49 +50,47 @@
 
     function displayFurnitureMedia(furniture) {
       const swiperWrapper = document.querySelector('.swiper-wrapper');
-      if (!swiperWrapper) return;
-      
       swiperWrapper.innerHTML = '';
-      
+
+      // Handle both new media format and legacy format
       let mediaItems = [];
-      
-      // Check for new media format
+
       if (furniture.mediaData && furniture.mediaData.length > 0) {
         mediaItems = furniture.mediaData;
-      } else {
-        // Legacy format - treat as images
-        const images = furniture.images || [furniture.imageUrl];
-        mediaItems = images.filter(url => url && url.trim()).map(url => ({
-          url: url,
-          type: 'image'
-        }));
+      } else if (furniture.images && furniture.images.length > 0) {
+        // Convert legacy format to new format
+        mediaItems = furniture.images.map(url => ({ url, type: 'image' }));
+      } else if (furniture.imageUrl) {
+        mediaItems = [{ url: furniture.imageUrl, type: 'image' }];
       }
-      
-      // Create slides for each media item
-      mediaItems.forEach((media, index) => {
+
+      mediaItems.forEach(media => {
         const slide = document.createElement('div');
         slide.className = 'swiper-slide';
-        
+
         if (media.type === 'video') {
           slide.innerHTML = `
-            <video src="${media.url}" class="w-100 h-100 object-cover" controls style="max-height: 500px;">
+            <video src="${media.url}" class="w-100 h-100" controls preload="metadata" style="max-height: 500px; object-fit: contain; background: #000;">
+              <source src="${media.url}" type="video/mp4">
+              <source src="${media.url}" type="video/webm">
+              <source src="${media.url}" type="video/ogg">
               Your browser does not support the video tag.
             </video>
           `;
         } else {
           slide.innerHTML = `
-            <img src="${media.url}" alt="${furniture.name}" class="w-100 h-100 object-cover" style="max-height: 500px;">
+            <img src="${media.url}" alt="${furniture.name}" class="w-100 h-100" style="max-height: 500px; object-fit: contain;">
           `;
         }
-        
+
         swiperWrapper.appendChild(slide);
       });
-      
+
       // Initialize or update Swiper
       if (swiper) {
         swiper.destroy(true, true);
       }
-      
+
       swiper = new Swiper('.swiper-container', {
         loop: mediaItems.length > 1,
         pagination: {
@@ -103,6 +101,39 @@
           nextEl: '.swiper-button-next',
           prevEl: '.swiper-button-prev',
         },
+        on: {
+          slideChange: function () {
+            // Pause all videos when slide changes
+            document.querySelectorAll('.swiper-slide video').forEach(video => {
+              video.pause();
+            });
+          }
+        }
+      });
+
+      // Add event listeners for video elements
+      document.querySelectorAll('.swiper-slide video').forEach(video => {
+        video.addEventListener('loadstart', function() {
+          console.log('Video loading started:', this.src);
+        });
+
+        video.addEventListener('error', function(e) {
+          console.error('Video error:', e, this.src);
+          // Replace with error message
+          this.parentElement.innerHTML = `
+            <div class="d-flex align-items-center justify-content-center bg-light" style="height: 500px;">
+              <div class="text-center">
+                <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                <p>Unable to load video</p>
+                <small class="text-muted">Please check the video URL</small>
+              </div>
+            </div>
+          `;
+        });
+
+        video.addEventListener('canplay', function() {
+          console.log('Video can play:', this.src);
+        });
       });
     }
 
@@ -418,9 +449,10 @@
       document.getElementById('productName').textContent = furniture.name;
       document.getElementById('productPrice').textContent = `Ksh${furniture.price.toFixed(2)}`;
       document.getElementById('productDescription').textContent = furniture.description;
-      
+
       // Handle media display (images and videos)
-      displayFurnitureMedia(furniture);ion || 'No description available.';
+      displayFurnitureMedia(furniture);
+      ion || 'No description available.';
       document.getElementById('productCategory').textContent = furniture.category || 'Uncategorized';
 
       // Setup image gallery

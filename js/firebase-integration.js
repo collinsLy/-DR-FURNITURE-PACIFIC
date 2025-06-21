@@ -23,15 +23,15 @@ const furnitureCollection = db.collection('furnitureItems');
 // Load featured products on the home page
 function loadFeaturedProducts() {
   const productSection = document.getElementById('product-list'); // Target the new div
-  
+
   // Check if we're on the home page and the product section exists
   if (!productSection || !window.location.pathname.includes('index')) return;
-  
+
   console.log('loadFeaturedProducts called'); // Add this line
 
   // Clear any static content
   productSection.innerHTML = '';
-  
+
   // Get featured furniture items (limit to 3)
   furnitureCollection.where('featured', '==', true).limit(3).get()
     .then(snapshot => {
@@ -40,7 +40,7 @@ function loadFeaturedProducts() {
         return;
       }
       console.log(`Found ${snapshot.size} featured furniture items.`);
-      
+
       let count = 0;
       snapshot.forEach(doc => {
         if (count < 4) {
@@ -59,10 +59,10 @@ function loadFeaturedProducts() {
 // Load popular products
 function loadPopularProducts() {
   const popularSection = document.querySelector('.popular-product .row');
-  
+
   // Check if we're on the home page and the popular section exists
   if (!popularSection || !window.location.pathname.includes('index')) return;
-  
+
   // Get popular furniture items (limit to 3)
   furnitureCollection.orderBy('views', 'desc').limit(3).get()
     .then(snapshot => {
@@ -70,12 +70,12 @@ function loadPopularProducts() {
         console.log('No popular furniture items found');
         return;
       }
-      
+
       snapshot.forEach(doc => {
         const item = doc.data();
         let mainMediaUrl = item.imageUrl;
         let isVideo = false;
-        
+
         // Check for new media format
         if (item.mediaData && item.mediaData.length > 0) {
           mainMediaUrl = item.mediaData[0].url;
@@ -83,11 +83,11 @@ function loadPopularProducts() {
         } else if (item.images && item.images.length > 0) {
           mainMediaUrl = item.images[0];
         }
-        
+
         const mediaElement = isVideo ? 
           `<video src="${mainMediaUrl}" class="img-fluid product-thumbnail" muted loop onmouseenter="this.play()" onmouseleave="this.pause()"></video>` :
           `<img src="${mainMediaUrl}" class="img-fluid product-thumbnail">`;
-        
+
         const popularHTML = `
           <div class="col-12 col-md-4 col-lg-4 mb-5 mb-md-0">
             <a class="product-item" href="furniture-detail.html?id=${doc.id}">
@@ -115,14 +115,14 @@ function loadShopProducts() {
   const furnitureContainer = document.getElementById('furnitureContainer');
   const loadingIndicator = document.getElementById('loadingIndicator');
   const noResultsMessage = document.getElementById('noResultsMessage');
-  
+
   // Check if we're on the shop page and the container exists
   if (!furnitureContainer) return;
-  
+
   // Show loading indicator
   if (loadingIndicator) loadingIndicator.style.display = 'block';
   if (noResultsMessage) noResultsMessage.style.display = 'none';
-  
+
   // Clear existing content to prevent duplication
   furnitureContainer.innerHTML = '';
 
@@ -131,23 +131,23 @@ function loadShopProducts() {
     .then(snapshot => {
       // Hide loading indicator
       if (loadingIndicator) loadingIndicator.style.display = 'none';
-      
+
       if (snapshot.empty) {
         if (noResultsMessage) noResultsMessage.style.display = 'block';
         return;
       }
-      
+
       // Create a document fragment to improve performance
       const fragment = document.createDocumentFragment();
-      
+
       snapshot.forEach(doc => {
         const item = doc.data();
         const col = document.createElement('div');
         col.className = 'col-12 col-md-4 col-lg-3 mb-5';
-        
+
         let mainMediaUrl = item.imageUrl;
         let isVideo = false;
-        
+
         // Check for new media format
         if (item.mediaData && item.mediaData.length > 0) {
           mainMediaUrl = item.mediaData[0].url;
@@ -155,11 +155,11 @@ function loadShopProducts() {
         } else if (item.images && item.images.length > 0) {
           mainMediaUrl = item.images[0];
         }
-        
+
         const mediaElement = isVideo ? 
           `<video src="${mainMediaUrl}" class="img-fluid product-thumbnail" muted loop onmouseenter="this.play()" onmouseleave="this.pause()"></video>` :
           `<img src="${mainMediaUrl}" class="img-fluid product-thumbnail">`;
-        
+
         col.innerHTML = `
           <a class="product-item" href="furniture-detail.html?id=${doc.id}">
             ${mediaElement}
@@ -172,7 +172,7 @@ function loadShopProducts() {
         `;
         fragment.appendChild(col);
       });
-      
+
       // Append all items at once
       furnitureContainer.appendChild(fragment);
     })
@@ -187,37 +187,37 @@ function getFilteredFurniture(category, priceRange, searchTerm) {
   const furnitureContainer = document.getElementById('furnitureContainer');
   const loadingIndicator = document.getElementById('loadingIndicator');
   const noResultsMessage = document.getElementById('noResultsMessage');
-  
+
   // Clear existing content
   furnitureContainer.innerHTML = '';
-  
+
   // Start with the base query
   let query = furnitureCollection;
-  
+
   // Apply category filter
   if (category && category !== 'all') {
     query = query.where('category', '==', category);
   }
-  
+
   // Get the query results
   query.get()
     .then(snapshot => {
       // Hide loading indicator
       if (loadingIndicator) loadingIndicator.style.display = 'none';
-      
+
       if (snapshot.empty) {
         if (noResultsMessage) noResultsMessage.style.display = 'block';
         return;
       }
-      
+
       // Filter results client-side for price and search term
       let filteredItems = [];
-      
+
       snapshot.forEach(doc => {
         const item = doc.data();
         let matchesPrice = true;
         let matchesSearch = true;
-        
+
         // Apply price filter
         if (priceRange && priceRange !== 'all') {
           const price = item.price;
@@ -226,36 +226,36 @@ function getFilteredFurniture(category, priceRange, searchTerm) {
           else if (priceRange === '15000-20000' && (price < 15000 || price > 20000)) matchesPrice = false;
           else if (priceRange === '20000+' && price < 20000) matchesPrice = false;
         }
-        
+
         // Apply search filter
         if (searchTerm) {
           const nameMatch = item.name.toLowerCase().includes(searchTerm);
           const descMatch = item.description && item.description.toLowerCase().includes(searchTerm);
           const categoryMatch = item.category.toLowerCase().includes(searchTerm);
-          
+
           matchesSearch = nameMatch || descMatch || categoryMatch;
         }
-        
+
         // Add to filtered items if it matches all criteria
         if (matchesPrice && matchesSearch) {
           filteredItems.push({ id: doc.id, ...item });
         }
       });
-      
+
       // Display filtered items or show no results message
       if (filteredItems.length === 0) {
         if (noResultsMessage) noResultsMessage.style.display = 'block';
       } else {
         // Create a document fragment to improve performance
         const fragment = document.createDocumentFragment();
-        
+
         filteredItems.forEach(item => {
           const col = document.createElement('div');
           col.className = 'col-12 col-md-4 col-lg-3 mb-5';
-          
+
           let mainMediaUrl = item.imageUrl;
           let isVideo = false;
-          
+
           // Check for new media format
           if (item.mediaData && item.mediaData.length > 0) {
             mainMediaUrl = item.mediaData[0].url;
@@ -263,11 +263,11 @@ function getFilteredFurniture(category, priceRange, searchTerm) {
           } else if (item.images && item.images.length > 0) {
             mainMediaUrl = item.images[0];
           }
-          
+
           const mediaElement = isVideo ? 
             `<video src="${mainMediaUrl}" class="img-fluid product-thumbnail" muted loop onmouseenter="this.play()" onmouseleave="this.pause()"></video>` :
             `<img src="${mainMediaUrl}" class="img-fluid product-thumbnail">`;
-          
+
           col.innerHTML = `
             <a class="product-item" href="furniture-detail.html?id=${item.id}">
               ${mediaElement}
@@ -280,7 +280,7 @@ function getFilteredFurniture(category, priceRange, searchTerm) {
           `;
           fragment.appendChild(col);
         });
-        
+
         // Append all items at once
         furnitureContainer.appendChild(fragment);
       }
@@ -294,22 +294,22 @@ function getFilteredFurniture(category, priceRange, searchTerm) {
 // Load categories for filter dropdown
 function loadCategories() {
   const categoryFilter = document.getElementById('categoryFilter');
-  
+
   // Check if we're on the shop page and the filter exists
   if (!categoryFilter) return;
-  
+
   // Get unique categories from furniture items
   furnitureCollection.get()
     .then(snapshot => {
       if (snapshot.empty) return;
-      
+
       const categories = new Set();
-      
+
       snapshot.forEach(doc => {
         const item = doc.data();
         if (item.category) categories.add(item.category);
       });
-      
+
       // Add categories to dropdown
       categories.forEach(category => {
         const option = document.createElement('option');
@@ -329,13 +329,13 @@ function loadCategories() {
 function loadProductDetails() {
   // Check if we're on the cart page
   if (!window.location.pathname.includes('cart')) return;
-  
+
   // Get product ID from URL parameter
   const urlParams = new URLSearchParams(window.location.search);
   const productId = urlParams.get('id');
-  
+
   if (!productId) return;
-  
+
   // Get product details
   furnitureCollection.doc(productId).get()
     .then(doc => {
@@ -343,20 +343,20 @@ function loadProductDetails() {
         console.log('No such product!');
         return;
       }
-      
+
       const item = doc.data();
-      
+
       // Update product details on the page
       const productImage = document.querySelector('.product-thumbnail');
       const productTitle = document.querySelector('.product-title');
       const productPrice = document.querySelector('.product-price');
       const productDescription = document.querySelector('.product-description');
-      
+
       if (productImage) productImage.src = item.imageUrl;
       if (productTitle) productTitle.textContent = item.name;
       if (productPrice) productPrice.textContent = `Ksh${item.price.toFixed(2)}`;
       if (productDescription) productDescription.textContent = item.description;
-      
+
       // Increment view count
       furnitureCollection.doc(productId).update({
         views: firebase.firestore.FieldValue.increment(1)
@@ -373,7 +373,7 @@ function loadProductDetails() {
 function createFurnitureItemHTML(id, item) {
   let mainMediaUrl = item.imageUrl;
   let isVideo = false;
-  
+
   // Check for new media format
   if (item.mediaData && item.mediaData.length > 0) {
     mainMediaUrl = item.mediaData[0].url;
@@ -381,11 +381,11 @@ function createFurnitureItemHTML(id, item) {
   } else if (item.images && item.images.length > 0) {
     mainMediaUrl = item.images[0];
   }
-  
+
   const mediaElement = isVideo ? 
     `<video src="${mainMediaUrl}" class="img-fluid product-thumbnail" muted loop onmouseenter="this.play()" onmouseleave="this.pause()"></video>` :
     `<img src="${mainMediaUrl}" class="img-fluid product-thumbnail">`;
-  
+
   return `
     <div class="col-12 col-md-4 col-lg-3 mb-5">
       <a class="product-item" href="furniture-detail.html?id=${id}">
@@ -437,3 +437,43 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+
+function createProductCard(furniture) {
+    const productCol = document.createElement('div');
+    productCol.className = 'col-12 col-md-4 col-lg-3 mb-5';
+
+    // Handle both new media format and legacy format
+    let mediaUrl = '';
+    let isVideo = false;
+
+    if (furniture.mediaData && furniture.mediaData.length > 0) {
+      // New format with media type
+      mediaUrl = furniture.mediaData[0].url;
+      isVideo = furniture.mediaData[0].type === 'video';
+    } else if (furniture.images && furniture.images.length > 0) {
+      // Legacy format - assume images
+      mediaUrl = furniture.images[0];
+      isVideo = false;
+    } else {
+      // Fallback to single image
+      mediaUrl = furniture.imageUrl || 'images/product-1.png';
+      isVideo = false;
+    }
+
+    const mediaElement = isVideo 
+      ? `<video src="${mediaUrl}" class="img-fluid product-thumbnail" muted loop style="width: 100%; height: 200px; object-fit: cover;" onmouseover="this.play()" onmouseout="this.pause(); this.currentTime=0;"></video>`
+      : `<img src="${mediaUrl}" class="img-fluid product-thumbnail" alt="${furniture.name}" style="width: 100%; height: 200px; object-fit: cover;">`;
+
+    productCol.innerHTML = `
+      <a class="product-item" href="furniture-detail.html?id=${furniture.id}">
+        ${mediaElement}
+        <h3 class="product-title">${furniture.name}</h3>
+        <strong class="product-price">Ksh${parseFloat(furniture.price).toFixed(2)}</strong>
+        <span class="icon-cross">
+          <img src="images/cross.svg" class="img-fluid">
+        </span>
+      </a>
+    `;
+
+    return productCol;
+  }

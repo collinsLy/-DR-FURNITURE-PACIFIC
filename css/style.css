@@ -720,3 +720,56 @@ textarea {
     height: 50px;
     border-radius: 50%;
     background: rgba(59, 93, 80, 0.2); }
+
+
+
+/* Video Styles */
+.product-thumbnail video {
+  border-radius: 10px;
+  transition: transform 0.3s ease;
+}
+
+.product-thumbnail video:hover {
+  transform: scale(1.05);
+}
+
+.swiper-slide video {
+  border-radius: 10px;
+  background: #000;
+}
+
+.video-controls {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+}
+
+/* Ensure videos don't overflow */
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Loading state for videos */
+.video-loading {
+  position: relative;
+}
+
+.video-loading::after {
+  content: "Loading video...";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 14px;
+}
