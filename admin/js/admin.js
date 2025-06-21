@@ -73,12 +73,12 @@ auth.onAuthStateChanged(user => {
 // Login form submission
 loginForm.addEventListener('submit', e => {
   e.preventDefault();
-  
+
   const email = document.getElementById('email-address').value;
   const password = document.getElementById('password').value;
-  
+
   loginError.classList.add('hidden');
-  
+
   auth.signInWithEmailAndPassword(email, password)
     .catch(error => {
       loginError.textContent = error.message;
@@ -152,7 +152,7 @@ function loadDashboard() {
   // Get total furniture count
   db.collection('furnitureItems').get().then(snapshot => {
     totalFurniture.textContent = snapshot.size;
-    
+
     // Get recent furniture items (limit to 3)
     db.collection('furnitureItems')
       .orderBy('timestamp', 'desc')
@@ -163,13 +163,13 @@ function loadDashboard() {
           recentFurniture.innerHTML = '<div class="text-center text-gray-500 py-4">No furniture items found</div>';
           return;
         }
-        
+
         recentFurniture.innerHTML = '';
         snapshot.forEach(doc => {
           const furniture = doc.data();
           const date = furniture.timestamp ? furniture.timestamp.toDate() : new Date();
           const formattedDate = date.toLocaleDateString();
-          
+
           recentFurniture.innerHTML += `
             <div class="bg-white rounded-lg shadow overflow-hidden">
               <img src="${furniture.imageUrl}" alt="${furniture.name}" class="w-full h-48 object-cover">
@@ -183,7 +183,7 @@ function loadDashboard() {
           `;
         });
       });
-    
+
     // Get latest update timestamp
     db.collection('furnitureItems')
       .orderBy('timestamp', 'desc')
@@ -197,7 +197,7 @@ function loadDashboard() {
         }
       });
   });
-  
+
   // Get unique categories count
   db.collection('furnitureItems').get().then(snapshot => {
     const categories = new Set();
@@ -214,7 +214,7 @@ function loadDashboard() {
 // Load furniture list
 function loadFurnitureList() {
   furnitureTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-500 py-4">Loading furniture items...</td></tr>';
-  
+
   db.collection('furnitureItems')
     .orderBy('timestamp', 'desc')
     .get()
@@ -223,12 +223,12 @@ function loadFurnitureList() {
         furnitureTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-500 py-4">No furniture items found</td></tr>';
         return;
       }
-      
+
       furnitureTableBody.innerHTML = '';
       snapshot.forEach(doc => {
         const furniture = doc.data();
         const id = doc.id;
-        
+
         furnitureTableBody.innerHTML += `
           <tr>
             <td class="px-6 py-4 whitespace-nowrap">
@@ -254,7 +254,7 @@ function loadFurnitureList() {
           </tr>
         `;
       });
-      
+
       // Add event listeners to edit and delete buttons
       document.querySelectorAll('.edit-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -262,7 +262,7 @@ function loadFurnitureList() {
           loadFurnitureForEdit(id);
         });
       });
-      
+
       document.querySelectorAll('.delete-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           const id = btn.getAttribute('data-id');
@@ -277,7 +277,7 @@ function loadFurnitureForEdit(id) {
   db.collection('furnitureItems').doc(id).get().then(doc => {
     if (doc.exists) {
       const furniture = doc.data();
-      
+
       editFurnitureId.value = id;
       editFurnitureName.value = furniture.name;
       editFurnitureCategory.value = furniture.category;
@@ -286,7 +286,7 @@ function loadFurnitureForEdit(id) {
       editFurnitureDescription.value = furniture.description;
       document.getElementById('edit-furniture-featured').checked = furniture.featured || false;
       editFurniturePreview.src = furniture.imageUrl;
-      
+
       navigateTo('edit-furniture');
     } else {
       showNotification('Furniture item not found', 'error');
@@ -297,14 +297,14 @@ function loadFurnitureForEdit(id) {
 // Add furniture form submission
 addFurnitureForm.addEventListener('submit', e => {
   e.preventDefault();
-  
+
   const name = document.getElementById('furniture-name').value;
   const category = document.getElementById('furniture-category').value;
   const price = parseFloat(document.getElementById('furniture-price').value);
   const imageUrl = document.getElementById('furniture-image').value;
   const description = document.getElementById('furniture-description').value;
   const featured = document.getElementById('furniture-featured').checked;
-  
+
   db.collection('furnitureItems').add({
     name,
     category,
@@ -327,7 +327,7 @@ addFurnitureForm.addEventListener('submit', e => {
 // Edit furniture form submission
 editFurnitureForm.addEventListener('submit', e => {
   e.preventDefault();
-  
+
   const id = editFurnitureId.value;
   const name = editFurnitureName.value;
   const category = editFurnitureCategory.value;
@@ -335,7 +335,7 @@ editFurnitureForm.addEventListener('submit', e => {
   const imageUrl = editFurnitureImage.value;
   const description = editFurnitureDescription.value;
   const featured = document.getElementById('edit-furniture-featured').checked;
-  
+
   db.collection('furnitureItems').doc(id).update({
     name,
     category,
@@ -396,7 +396,7 @@ cancelDeleteBtn.addEventListener('click', () => {
 // Show notification
 function showNotification(message, type = 'success') {
   notificationMessage.textContent = message;
-  
+
   if (type === 'error') {
     notification.classList.remove('bg-green-500');
     notification.classList.add('bg-red-500');
@@ -404,30 +404,21 @@ function showNotification(message, type = 'success') {
     notification.classList.remove('bg-red-500');
     notification.classList.add('bg-green-500');
   }
-  
+
   notification.classList.remove('opacity-0', 'translate-y-[-20px]');
   notification.classList.add('opacity-100', 'translate-y-0');
-  
+
   setTimeout(() => {
     notification.classList.remove('opacity-100', 'translate-y-0');
     notification.classList.add('opacity-0', 'translate-y-[-20px]');
   }, 3000);
 }
 
-// Initialize the dashboard on load
-navigateToDefaultPage();
-
-function navigateToDefaultPage() {
-  // Check if user is authenticated
-  const user = auth.currentUser;
-  if (user) {
-    navigateTo('dashboard');
-  }
-}
-
 // Load inquiry messages
 function loadInquiryMessages() {
   const inquiryMessagesContainer = document.getElementById('inquiryMessagesContainer');
+  if (!inquiryMessagesContainer) return;
+
   inquiryMessagesContainer.innerHTML = '<div class="col-12 text-center"><p>Loading messages...</p></div>';
 
   db.collection('inquiryMessages').orderBy('timestamp', 'desc').get()
@@ -442,7 +433,7 @@ function loadInquiryMessages() {
         const message = doc.data();
         const date = message.timestamp ? message.timestamp.toDate() : new Date();
         const formattedDate = date.toLocaleString();
-        
+
         const messageCard = document.createElement('div');
         messageCard.className = 'col-md-6 col-lg-4 mb-4';
         messageCard.innerHTML = `
@@ -492,52 +483,7 @@ function deleteMessage(messageId) {
   }
 }
 
-// Add event listener for refresh button
-document.addEventListener('DOMContentLoaded', () => {
-  const refreshButton = document.getElementById('refresh-messages');
-  if (refreshButton) {
-    refreshButton.addEventListener('click', () => {
-      loadInquiryMessages();
-      showNotification('Messages refreshed');
-    });
-  }
-
-  // Load messages if we're on the inquiry messages page
-  if (document.getElementById('inquiry-messages-page')) {
-    loadInquiryMessages();
-  }
-});
-
-// Cancel delete button
-cancelDeleteBtn.addEventListener('click', () => {
-  deleteModal.classList.add('hidden');
-  currentDeleteId = null;
-});
-
-// Show notification
-function showNotification(message, type = 'success') {
-  notificationMessage.textContent = message;
-  
-  if (type === 'error') {
-    notification.classList.remove('bg-green-500');
-    notification.classList.add('bg-red-500');
-  } else {
-    notification.classList.remove('bg-red-500');
-    notification.classList.add('bg-green-500');
-  }
-  
-  notification.classList.remove('opacity-0', 'translate-y-[-20px]');
-  notification.classList.add('opacity-100', 'translate-y-0');
-  
-  setTimeout(() => {
-    notification.classList.remove('opacity-100', 'translate-y-0');
-    notification.classList.add('opacity-0', 'translate-y-[-20px]');
-  }, 3000);
-}
-
 // Initialize the dashboard on load
-navigateToDefaultPage();
-
 function navigateToDefaultPage() {
   // Check if user is authenticated
   const user = auth.currentUser;
@@ -546,73 +492,6 @@ function navigateToDefaultPage() {
   }
 }
 
-// Load inquiry messages
-function loadInquiryMessages() {
-  const inquiryMessagesContainer = document.getElementById('inquiryMessagesContainer');
-  inquiryMessagesContainer.innerHTML = '<div class="col-12 text-center"><p>Loading messages...</p></div>';
-
-  db.collection('inquiryMessages').orderBy('timestamp', 'desc').get()
-    .then(snapshot => {
-      if (snapshot.empty) {
-        inquiryMessagesContainer.innerHTML = '<div class="col-12 text-center"><p>No inquiry messages found.</p></div>';
-        return;
-      }
-
-      inquiryMessagesContainer.innerHTML = '';
-      snapshot.forEach(doc => {
-        const message = doc.data();
-        const date = message.timestamp ? message.timestamp.toDate() : new Date();
-        const formattedDate = date.toLocaleString();
-        
-        const messageCard = document.createElement('div');
-        messageCard.className = 'col-md-6 col-lg-4 mb-4';
-        messageCard.innerHTML = `
-          <div class="card h-100">
-            <div class="card-body">
-              <h5 class="card-title">${message.firstName} ${message.lastName}</h5>
-              <h6 class="card-subtitle mb-2 text-muted">${message.email}</h6>
-              <p class="card-text">${message.message}</p>
-              <div class="card-footer bg-transparent border-0">
-                <small class="text-muted">
-                  <i class="far fa-clock"></i> ${formattedDate}
-                </small>
-                <button class="btn btn-sm btn-danger float-right delete-message" data-id="${doc.id}">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        `;
-
-        // Add delete functionality
-        const deleteBtn = messageCard.querySelector('.delete-message');
-        deleteBtn.addEventListener('click', () => deleteMessage(doc.id));
-
-        inquiryMessagesContainer.appendChild(messageCard);
-      });
-    })
-    .catch(error => {
-      console.error("Error loading inquiry messages: ", error);
-      inquiryMessagesContainer.innerHTML = 
-        '<div class="col-12"><div class="alert alert-danger">Error loading messages. Please try again.</div></div>';
-    });
-}
-
-// Delete message function
-function deleteMessage(messageId) {
-  if (confirm('Are you sure you want to delete this message?')) {
-    db.collection('inquiryMessages').doc(messageId).delete()
-      .then(() => {
-        showNotification('Message deleted successfully');
-        loadInquiryMessages(); // Reload the messages
-      })
-      .catch(error => {
-        console.error("Error deleting message: ", error);
-        showNotification('Error deleting message', 'error');
-      });
-  }
-}
-
 // Add event listener for refresh button
 document.addEventListener('DOMContentLoaded', () => {
   const refreshButton = document.getElementById('refresh-messages');
@@ -627,1370 +506,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('inquiry-messages-page')) {
     loadInquiryMessages();
   }
+
+  // Initialize the dashboard
+  navigateToDefaultPage();
 });
-
-// Cancel delete button
-cancelDeleteBtn.addEventListener('click', () => {
-  deleteModal.classList.add('hidden');
-  currentDeleteId = null;
-});
-
-// Show notification
-function showNotification(message, type = 'success') {
-  notificationMessage.textContent = message;
-  
-  if (type === 'error') {
-    notification.classList.remove('bg-green-500');
-    notification.classList.add('bg-red-500');
-  } else {
-    notification.classList.remove('bg-red-500');
-    notification.classList.add('bg-green-500');
-  }
-  
-  notification.classList.remove('opacity-0', 'translate-y-[-20px]');
-  notification.classList.add('opacity-100', 'translate-y-0');
-  
-  setTimeout(() => {
-    notification.classList.remove('opacity-100', 'translate-y-0');
-    notification.classList.add('opacity-0', 'translate-y-[-20px]');
-  }, 3000);
-}
-
-// Initialize the dashboard on load
-navigateToDefaultPage();
-
-function navigateToDefaultPage() {
-  // Check if user is authenticated
-  const user = auth.currentUser;
-  if (user) {
-    navigateTo('dashboard');
-  }
-}
-
-// Load inquiry messages
-function loadInquiryMessages() {
-  const inquiryMessagesContainer = document.getElementById('inquiryMessagesContainer');
-  inquiryMessagesContainer.innerHTML = '<div class="col-12 text-center"><p>Loading messages...</p></div>';
-
-  db.collection('inquiryMessages').orderBy('timestamp', 'desc').get()
-    .then(snapshot => {
-      if (snapshot.empty) {
-        inquiryMessagesContainer.innerHTML = '<div class="col-12 text-center"><p>No inquiry messages found.</p></div>';
-        return;
-      }
-
-      inquiryMessagesContainer.innerHTML = '';
-      snapshot.forEach(doc => {
-        const message = doc.data();
-        const date = message.timestamp ? message.timestamp.toDate() : new Date();
-        const formattedDate = date.toLocaleString();
-        
-        const messageCard = document.createElement('div');
-        messageCard.className = 'col-md-6 col-lg-4 mb-4';
-        messageCard.innerHTML = `
-          <div class="card h-100">
-            <div class="card-body">
-              <h5 class="card-title">${message.firstName} ${message.lastName}</h5>
-              <h6 class="card-subtitle mb-2 text-muted">${message.email}</h6>
-              <p class="card-text">${message.message}</p>
-              <div class="card-footer bg-transparent border-0">
-                <small class="text-muted">
-                  <i class="far fa-clock"></i> ${formattedDate}
-                </small>
-                <button class="btn btn-sm btn-danger float-right delete-message" data-id="${doc.id}">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        `;
-
-        // Add delete functionality
-        const deleteBtn = messageCard.querySelector('.delete-message');
-        deleteBtn.addEventListener('click', () => deleteMessage(doc.id));
-
-        inquiryMessagesContainer.appendChild(messageCard);
-      });
-    })
-    .catch(error => {
-      console.error("Error loading inquiry messages: ", error);
-      inquiryMessagesContainer.innerHTML = 
-        '<div class="col-12"><div class="alert alert-danger">Error loading messages. Please try again.</div></div>';
-    });
-}
-
-// Delete message function
-function deleteMessage(messageId) {
-  if (confirm('Are you sure you want to delete this message?')) {
-    db.collection('inquiryMessages').doc(messageId).delete()
-      .then(() => {
-        showNotification('Message deleted successfully');
-        loadInquiryMessages(); // Reload the messages
-      })
-      .catch(error => {
-        console.error("Error deleting message: ", error);
-        showNotification('Error deleting message', 'error');
-      });
-  }
-}
-
-// Add event listener for refresh button
-document.addEventListener('DOMContentLoaded', () => {
-  const refreshButton = document.getElementById('refresh-messages');
-  if (refreshButton) {
-    refreshButton.addEventListener('click', () => {
-      loadInquiryMessages();
-      showNotification('Messages refreshed');
-    });
-  }
-
-  // Load messages if we're on the inquiry messages page
-  if (document.getElementById('inquiry-messages-page')) {
-    loadInquiryMessages();
-  }
-});
-
-// Cancel delete button
-cancelDeleteBtn.addEventListener('click', () => {
-  deleteModal.classList.add('hidden');
-  currentDeleteId = null;
-});
-
-// Show notification
-function showNotification(message, type = 'success') {
-  notificationMessage.textContent = message;
-  
-  if (type === 'error') {
-    notification.classList.remove('bg-green-500');
-    notification.classList.add('bg-red-500');
-  } else {
-    notification.classList.remove('bg-red-500');
-    notification.classList.add('bg-green-500');
-  }
-  
-  notification.classList.remove('opacity-0', 'translate-y-[-20px]');
-  notification.classList.add('opacity-100', 'translate-y-0');
-  
-  setTimeout(() => {
-    notification.classList.remove('opacity-100', 'translate-y-0');
-    notification.classList.add('opacity-0', 'translate-y-[-20px]');
-  }, 3000);
-}
-
-// Initialize the dashboard on load
-navigateToDefaultPage();
-
-function navigateToDefaultPage() {
-  // Check if user is authenticated
-  const user = auth.currentUser;
-  if (user) {
-    navigateTo('dashboard');
-  }
-}
-
-// Load inquiry messages
-function loadInquiryMessages() {
-  const inquiryMessagesContainer = document.getElementById('inquiryMessagesContainer');
-  inquiryMessagesContainer.innerHTML = '<div class="col-12 text-center"><p>Loading messages...</p></div>';
-
-  db.collection('inquiryMessages').orderBy('timestamp', 'desc').get()
-    .then(snapshot => {
-      if (snapshot.empty) {
-        inquiryMessagesContainer.innerHTML = '<div class="col-12 text-center"><p>No inquiry messages found.</p></div>';
-        return;
-      }
-
-      inquiryMessagesContainer.innerHTML = '';
-      snapshot.forEach(doc => {
-        const message = doc.data();
-        const date = message.timestamp ? message.timestamp.toDate() : new Date();
-        const formattedDate = date.toLocaleString();
-        
-        const messageCard = document.createElement('div');
-        messageCard.className = 'col-md-6 col-lg-4 mb-4';
-        messageCard.innerHTML = `
-          <div class="card h-100">
-            <div class="card-body">
-              <h5 class="card-title">${message.firstName} ${message.lastName}</h5>
-              <h6 class="card-subtitle mb-2 text-muted">${message.email}</h6>
-              <p class="card-text">${message.message}</p>
-              <div class="card-footer bg-transparent border-0">
-                <small class="text-muted">
-                  <i class="far fa-clock"></i> ${formattedDate}
-                </small>
-                <button class="btn btn-sm btn-danger float-right delete-message" data-id="${doc.id}">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        `;
-
-        // Add delete functionality
-        const deleteBtn = messageCard.querySelector('.delete-message');
-        deleteBtn.addEventListener('click', () => deleteMessage(doc.id));
-
-        inquiryMessagesContainer.appendChild(messageCard);
-      });
-    })
-    .catch(error => {
-      console.error("Error loading inquiry messages: ", error);
-      inquiryMessagesContainer.innerHTML = 
-        '<div class="col-12"><div class="alert alert-danger">Error loading messages. Please try again.</div></div>';
-    });
-}
-
-// Delete message function
-function deleteMessage(messageId) {
-  if (confirm('Are you sure you want to delete this message?')) {
-    db.collection('inquiryMessages').doc(messageId).delete()
-      .then(() => {
-        showNotification('Message deleted successfully');
-        loadInquiryMessages(); // Reload the messages
-      })
-      .catch(error => {
-        console.error("Error deleting message: ", error);
-        showNotification('Error deleting message', 'error');
-      });
-  }
-}
-
-// Add event listener for refresh button
-document.addEventListener('DOMContentLoaded', () => {
-  const refreshButton = document.getElementById('refresh-messages');
-  if (refreshButton) {
-    refreshButton.addEventListener('click', () => {
-      loadInquiryMessages();
-      showNotification('Messages refreshed');
-    });
-  }
-
-  // Load messages if we're on the inquiry messages page
-  if (document.getElementById('inquiry-messages-page')) {
-    loadInquiryMessages();
-  }
-});
-
-// Cancel delete button
-cancelDeleteBtn.addEventListener('click', () => {
-  deleteModal.classList.add('hidden');
-  currentDeleteId = null;
-});
-
-// Show notification
-function showNotification(message, type = 'success') {
-  notificationMessage.textContent = message;
-  
-  if (type === 'error') {
-    notification.classList.remove('bg-green-500');
-    notification.classList.add('bg-red-500');
-  } else {
-    notification.classList.remove('bg-red-500');
-    notification.classList.add('bg-green-500');
-  }
-  
-  notification.classList.remove('opacity-0', 'translate-y-[-20px]');
-  notification.classList.add('opacity-100', 'translate-y-0');
-  
-  setTimeout(() => {
-    notification.classList.remove('opacity-100', 'translate-y-0');
-    notification.classList.add('opacity-0', 'translate-y-[-20px]');
-  }, 3000);
-}
-
-// Initialize the dashboard on load
-navigateToDefaultPage();
-
-function navigateToDefaultPage() {
-  // Check if user is authenticated
-  const user = auth.currentUser;
-  if (user) {
-    navigateTo('dashboard');
-  }
-}
-
-// Load inquiry messages
-function loadInquiryMessages() {
-  const inquiryMessagesContainer = document.getElementById('inquiryMessagesContainer');
-  inquiryMessagesContainer.innerHTML = '<div class="col-12 text-center"><p>Loading messages...</p></div>';
-
-  db.collection('inquiryMessages').orderBy('timestamp', 'desc').get()
-    .then(snapshot => {
-      if (snapshot.empty) {
-        inquiryMessagesContainer.innerHTML = '<div class="col-12 text-center"><p>No inquiry messages found.</p></div>';
-        return;
-      }
-
-      inquiryMessagesContainer.innerHTML = '';
-      snapshot.forEach(doc => {
-        const message = doc.data();
-        const date = message.timestamp ? message.timestamp.toDate() : new Date();
-        const formattedDate = date.toLocaleString();
-        
-        const messageCard = document.createElement('div');
-        messageCard.className = 'col-md-6 col-lg-4 mb-4';
-        messageCard.innerHTML = `
-          <div class="card h-100">
-            <div class="card-body">
-              <h5 class="card-title">${message.firstName} ${message.lastName}</h5>
-              <h6 class="card-subtitle mb-2 text-muted">${message.email}</h6>
-              <p class="card-text">${message.message}</p>
-              <div class="card-footer bg-transparent border-0">
-                <small class="text-muted">
-                  <i class="far fa-clock"></i> ${formattedDate}
-                </small>
-                <button class="btn btn-sm btn-danger float-right delete-message" data-id="${doc.id}">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        `;
-
-        // Add delete functionality
-        const deleteBtn = messageCard.querySelector('.delete-message');
-        deleteBtn.addEventListener('click', () => deleteMessage(doc.id));
-
-        inquiryMessagesContainer.appendChild(messageCard);
-      });
-    })
-    .catch(error => {
-      console.error("Error loading inquiry messages: ", error);
-      inquiryMessagesContainer.innerHTML = 
-        '<div class="col-12"><div class="alert alert-danger">Error loading messages. Please try again.</div></div>';
-    });
-}
-
-// Delete message function
-function deleteMessage(messageId) {
-  if (confirm('Are you sure you want to delete this message?')) {
-    db.collection('inquiryMessages').doc(messageId).delete()
-      .then(() => {
-        showNotification('Message deleted successfully');
-        loadInquiryMessages(); // Reload the messages
-      })
-      .catch(error => {
-        console.error("Error deleting message: ", error);
-        showNotification('Error deleting message', 'error');
-      });
-  }
-}
-
-// Add event listener for refresh button
-document.addEventListener('DOMContentLoaded', () => {
-  const refreshButton = document.getElementById('refresh-messages');
-  if (refreshButton) {
-    refreshButton.addEventListener('click', () => {
-      loadInquiryMessages();
-      showNotification('Messages refreshed');
-    });
-  }
-
-  // Load messages if we're on the inquiry messages page
-  if (document.getElementById('inquiry-messages-page')) {
-    loadInquiryMessages();
-  }
-});
-
-// Cancel delete button
-cancelDeleteBtn.addEventListener('click', () => {
-  deleteModal.classList.add('hidden');
-  currentDeleteId = null;
-});
-
-// Show notification
-function showNotification(message, type = 'success') {
-  notificationMessage.textContent = message;
-  
-  if (type === 'error') {
-    notification.classList.remove('bg-green-500');
-    notification.classList.add('bg-red-500');
-  } else {
-    notification.classList.remove('bg-red-500');
-    notification.classList.add('bg-green-500');
-  }
-  
-  notification.classList.remove('opacity-0', 'translate-y-[-20px]');
-  notification.classList.add('opacity-100', 'translate-y-0');
-  
-  setTimeout(() => {
-    notification.classList.remove('opacity-100', 'translate-y-0');
-    notification.classList.add('opacity-0', 'translate-y-[-20px]');
-  }, 3000);
-}
-
-// Initialize the dashboard on load
-navigateToDefaultPage();
-
-function navigateToDefaultPage() {
-  // Check if user is authenticated
-  const user = auth.currentUser;
-  if (user) {
-    navigateTo('dashboard');
-  }
-}
-
-// Load inquiry messages
-function loadInquiryMessages() {
-  const inquiryMessagesContainer = document.getElementById('inquiryMessagesContainer');
-  inquiryMessagesContainer.innerHTML = '<div class="col-12 text-center"><p>Loading messages...</p></div>';
-
-  db.collection('inquiryMessages').orderBy('timestamp', 'desc').get()
-    .then(snapshot => {
-      if (snapshot.empty) {
-        inquiryMessagesContainer.innerHTML = '<div class="col-12 text-center"><p>No inquiry messages found.</p></div>';
-        return;
-      }
-
-      inquiryMessagesContainer.innerHTML = '';
-      snapshot.forEach(doc => {
-        const message = doc.data();
-        const date = message.timestamp ? message.timestamp.toDate() : new Date();
-        const formattedDate = date.toLocaleString();
-        
-        const messageCard = document.createElement('div');
-        messageCard.className = 'col-md-6 col-lg-4 mb-4';
-        messageCard.innerHTML = `
-          <div class="card h-100">
-            <div class="card-body">
-              <h5 class="card-title">${message.firstName} ${message.lastName}</h5>
-              <h6 class="card-subtitle mb-2 text-muted">${message.email}</h6>
-              <p class="card-text">${message.message}</p>
-              <div class="card-footer bg-transparent border-0">
-                <small class="text-muted">
-                  <i class="far fa-clock"></i> ${formattedDate}
-                </small>
-                <button class="btn btn-sm btn-danger float-right delete-message" data-id="${doc.id}">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        `;
-
-        // Add delete functionality
-        const deleteBtn = messageCard.querySelector('.delete-message');
-        deleteBtn.addEventListener('click', () => deleteMessage(doc.id));
-
-        inquiryMessagesContainer.appendChild(messageCard);
-      });
-    })
-    .catch(error => {
-      console.error("Error loading inquiry messages: ", error);
-      inquiryMessagesContainer.innerHTML = 
-        '<div class="col-12"><div class="alert alert-danger">Error loading messages. Please try again.</div></div>';
-    });
-}
-
-// Delete message function
-function deleteMessage(messageId) {
-  if (confirm('Are you sure you want to delete this message?')) {
-    db.collection('inquiryMessages').doc(messageId).delete()
-      .then(() => {
-        showNotification('Message deleted successfully');
-        loadInquiryMessages(); // Reload the messages
-      })
-      .catch(error => {
-        console.error("Error deleting message: ", error);
-        showNotification('Error deleting message', 'error');
-      });
-  }
-}
-
-// Add event listener for refresh button
-document.addEventListener('DOMContentLoaded', () => {
-  const refreshButton = document.getElementById('refresh-messages');
-  if (refreshButton) {
-    refreshButton.addEventListener('click', () => {
-      loadInquiryMessages();
-      showNotification('Messages refreshed');
-    });
-  }
-
-  // Load messages if we're on the inquiry messages page
-  if (document.getElementById('inquiry-messages-page')) {
-    loadInquiryMessages();
-  }
-});
-
-// Cancel delete button
-cancelDeleteBtn.addEventListener('click', () => {
-  deleteModal.classList.add('hidden');
-  currentDeleteId = null;
-});
-
-// Show notification
-function showNotification(message, type = 'success') {
-  notificationMessage.textContent = message;
-  
-  if (type === 'error') {
-    notification.classList.remove('bg-green-500');
-    notification.classList.add('bg-red-500');
-  } else {
-    notification.classList.remove('bg-red-500');
-    notification.classList.add('bg-green-500');
-  }
-  
-  notification.classList.remove('opacity-0', 'translate-y-[-20px]');
-  notification.classList.add('opacity-100', 'translate-y-0');
-  
-  setTimeout(() => {
-    notification.classList.remove('opacity-100', 'translate-y-0');
-    notification.classList.add('opacity-0', 'translate-y-[-20px]');
-  }, 3000);
-}
-
-// Initialize the dashboard on load
-navigateToDefaultPage();
-
-function navigateToDefaultPage() {
-  // Check if user is authenticated
-  const user = auth.currentUser;
-  if (user) {
-    navigateTo('dashboard');
-  }
-}
-
-// Load inquiry messages
-function loadInquiryMessages() {
-  const inquiryMessagesContainer = document.getElementById('inquiryMessagesContainer');
-  inquiryMessagesContainer.innerHTML = '<div class="col-12 text-center"><p>Loading messages...</p></div>';
-
-  db.collection('inquiryMessages').orderBy('timestamp', 'desc').get()
-    .then(snapshot => {
-      if (snapshot.empty) {
-        inquiryMessagesContainer.innerHTML = '<div class="col-12 text-center"><p>No inquiry messages found.</p></div>';
-        return;
-      }
-
-      inquiryMessagesContainer.innerHTML = '';
-      snapshot.forEach(doc => {
-        const message = doc.data();
-        const date = message.timestamp ? message.timestamp.toDate() : new Date();
-        const formattedDate = date.toLocaleString();
-        
-        const messageCard = document.createElement('div');
-        messageCard.className = 'col-md-6 col-lg-4 mb-4';
-        messageCard.innerHTML = `
-          <div class="card h-100">
-            <div class="card-body">
-              <h5 class="card-title">${message.firstName} ${message.lastName}</h5>
-              <h6 class="card-subtitle mb-2 text-muted">${message.email}</h6>
-              <p class="card-text">${message.message}</p>
-              <div class="card-footer bg-transparent border-0">
-                <small class="text-muted">
-                  <i class="far fa-clock"></i> ${formattedDate}
-                </small>
-                <button class="btn btn-sm btn-danger float-right delete-message" data-id="${doc.id}">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        `;
-
-        // Add delete functionality
-        const deleteBtn = messageCard.querySelector('.delete-message');
-        deleteBtn.addEventListener('click', () => deleteMessage(doc.id));
-
-        inquiryMessagesContainer.appendChild(messageCard);
-      });
-    })
-    .catch(error => {
-      console.error("Error loading inquiry messages: ", error);
-      inquiryMessagesContainer.innerHTML = 
-        '<div class="col-12"><div class="alert alert-danger">Error loading messages. Please try again.</div></div>';
-    });
-}
-
-// Delete message function
-function deleteMessage(messageId) {
-  if (confirm('Are you sure you want to delete this message?')) {
-    db.collection('inquiryMessages').doc(messageId).delete()
-      .then(() => {
-        showNotification('Message deleted successfully');
-        loadInquiryMessages(); // Reload the messages
-      })
-      .catch(error => {
-        console.error("Error deleting message: ", error);
-        showNotification('Error deleting message', 'error');
-      });
-  }
-}
-
-// Add event listener for refresh button
-document.addEventListener('DOMContentLoaded', () => {
-  const refreshButton = document.getElementById('refresh-messages');
-  if (refreshButton) {
-    refreshButton.addEventListener('click', () => {
-      loadInquiryMessages();
-      showNotification('Messages refreshed');
-    });
-  }
-
-  // Load messages if we're on the inquiry messages page
-  if (document.getElementById('inquiry-messages-page')) {
-    loadInquiryMessages();
-  }
-});
-
-// Cancel delete button
-cancelDeleteBtn.addEventListener('click', () => {
-  deleteModal.classList.add('hidden');
-  currentDeleteId = null;
-});
-
-// Show notification
-function showNotification(message, type = 'success') {
-  notificationMessage.textContent = message;
-  
-  if (type === 'error') {
-    notification.classList.remove('bg-green-500');
-    notification.classList.add('bg-red-500');
-  } else {
-    notification.classList.remove('bg-red-500');
-    notification.classList.add('bg-green-500');
-  }
-  
-  notification.classList.remove('opacity-0', 'translate-y-[-20px]');
-  notification.classList.add('opacity-100', 'translate-y-0');
-  
-  setTimeout(() => {
-    notification.classList.remove('opacity-100', 'translate-y-0');
-    notification.classList.add('opacity-0', 'translate-y-[-20px]');
-  }, 3000);
-}
-
-// Initialize the dashboard on load
-navigateToDefaultPage();
-
-function navigateToDefaultPage() {
-  // Check if user is authenticated
-  const user = auth.currentUser;
-  if (user) {
-    navigateTo('dashboard');
-  }
-}
-
-// Load inquiry messages
-function loadInquiryMessages() {
-  const inquiryMessagesContainer = document.getElementById('inquiryMessagesContainer');
-  inquiryMessagesContainer.innerHTML = '<div class="col-12 text-center"><p>Loading messages...</p></div>';
-
-  db.collection('inquiryMessages').orderBy('timestamp', 'desc').get()
-    .then(snapshot => {
-      if (snapshot.empty) {
-        inquiryMessagesContainer.innerHTML = '<div class="col-12 text-center"><p>No inquiry messages found.</p></div>';
-        return;
-      }
-
-      inquiryMessagesContainer.innerHTML = '';
-      snapshot.forEach(doc => {
-        const message = doc.data();
-        const date = message.timestamp ? message.timestamp.toDate() : new Date();
-        const formattedDate = date.toLocaleString();
-        
-        const messageCard = document.createElement('div');
-        messageCard.className = 'col-md-6 col-lg-4 mb-4';
-        messageCard.innerHTML = `
-          <div class="card h-100">
-            <div class="card-body">
-              <h5 class="card-title">${message.firstName} ${message.lastName}</h5>
-              <h6 class="card-subtitle mb-2 text-muted">${message.email}</h6>
-              <p class="card-text">${message.message}</p>
-              <div class="card-footer bg-transparent border-0">
-                <small class="text-muted">
-                  <i class="far fa-clock"></i> ${formattedDate}
-                </small>
-                <button class="btn btn-sm btn-danger float-right delete-message" data-id="${doc.id}">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        `;
-
-        // Add delete functionality
-        const deleteBtn = messageCard.querySelector('.delete-message');
-        deleteBtn.addEventListener('click', () => deleteMessage(doc.id));
-
-        inquiryMessagesContainer.appendChild(messageCard);
-      });
-    })
-    .catch(error => {
-      console.error("Error loading inquiry messages: ", error);
-      inquiryMessagesContainer.innerHTML = 
-        '<div class="col-12"><div class="alert alert-danger">Error loading messages. Please try again.</div></div>';
-    });
-}
-
-// Delete message function
-function deleteMessage(messageId) {
-  if (confirm('Are you sure you want to delete this message?')) {
-    db.collection('inquiryMessages').doc(messageId).delete()
-      .then(() => {
-        showNotification('Message deleted successfully');
-        loadInquiryMessages(); // Reload the messages
-      })
-      .catch(error => {
-        console.error("Error deleting message: ", error);
-        showNotification('Error deleting message', 'error');
-      });
-  }
-}
-
-// Add event listener for refresh button
-document.addEventListener('DOMContentLoaded', () => {
-  const refreshButton = document.getElementById('refresh-messages');
-  if (refreshButton) {
-    refreshButton.addEventListener('click', () => {
-      loadInquiryMessages();
-      showNotification('Messages refreshed');
-    });
-  }
-
-  // Load messages if we're on the inquiry messages page
-  if (document.getElementById('inquiry-messages-page')) {
-    loadInquiryMessages();
-  }
-});
-
-// Cancel delete button
-cancelDeleteBtn.addEventListener('click', () => {
-  deleteModal.classList.add('hidden');
-  currentDeleteId = null;
-});
-
-// Show notification
-function showNotification(message, type = 'success') {
-  notificationMessage.textContent = message;
-  
-  if (type === 'error') {
-    notification.classList.remove('bg-green-500');
-    notification.classList.add('bg-red-500');
-  } else {
-    notification.classList.remove('bg-red-500');
-    notification.classList.add('bg-green-500');
-  }
-  
-  notification.classList.remove('opacity-0', 'translate-y-[-20px]');
-  notification.classList.add('opacity-100', 'translate-y-0');
-  
-  setTimeout(() => {
-    notification.classList.remove('opacity-100', 'translate-y-0');
-    notification.classList.add('opacity-0', 'translate-y-[-20px]');
-  }, 3000);
-}
-
-// Initialize the dashboard on load
-navigateToDefaultPage();
-
-function navigateToDefaultPage() {
-  // Check if user is authenticated
-  const user = auth.currentUser;
-  if (user) {
-    navigateTo('dashboard');
-  }
-}
-
-// Load inquiry messages
-function loadInquiryMessages() {
-  const inquiryMessagesContainer = document.getElementById('inquiryMessagesContainer');
-  inquiryMessagesContainer.innerHTML = '<div class="col-12 text-center"><p>Loading messages...</p></div>';
-
-  db.collection('inquiryMessages').orderBy('timestamp', 'desc').get()
-    .then(snapshot => {
-      if (snapshot.empty) {
-        inquiryMessagesContainer.innerHTML = '<div class="col-12 text-center"><p>No inquiry messages found.</p></div>';
-        return;
-      }
-
-      inquiryMessagesContainer.innerHTML = '';
-      snapshot.forEach(doc => {
-        const message = doc.data();
-        const date = message.timestamp ? message.timestamp.toDate() : new Date();
-        const formattedDate = date.toLocaleString();
-        
-        const messageCard = document.createElement('div');
-        messageCard.className = 'col-md-6 col-lg-4 mb-4';
-        messageCard.innerHTML = `
-          <div class="card h-100">
-            <div class="card-body">
-              <h5 class="card-title">${message.firstName} ${message.lastName}</h5>
-              <h6 class="card-subtitle mb-2 text-muted">${message.email}</h6>
-              <p class="card-text">${message.message}</p>
-              <div class="card-footer bg-transparent border-0">
-                <small class="text-muted">
-                  <i class="far fa-clock"></i> ${formattedDate}
-                </small>
-                <button class="btn btn-sm btn-danger float-right delete-message" data-id="${doc.id}">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        `;
-
-        // Add delete functionality
-        const deleteBtn = messageCard.querySelector('.delete-message');
-        deleteBtn.addEventListener('click', () => deleteMessage(doc.id));
-
-        inquiryMessagesContainer.appendChild(messageCard);
-      });
-    })
-    .catch(error => {
-      console.error("Error loading inquiry messages: ", error);
-      inquiryMessagesContainer.innerHTML = 
-        '<div class="col-12"><div class="alert alert-danger">Error loading messages. Please try again.</div></div>';
-    });
-}
-
-// Delete message function
-function deleteMessage(messageId) {
-  if (confirm('Are you sure you want to delete this message?')) {
-    db.collection('inquiryMessages').doc(messageId).delete()
-      .then(() => {
-        showNotification('Message deleted successfully');
-        loadInquiryMessages(); // Reload the messages
-      })
-      .catch(error => {
-        console.error("Error deleting message: ", error);
-        showNotification('Error deleting message', 'error');
-      });
-  }
-}
-
-// Add event listener for refresh button
-document.addEventListener('DOMContentLoaded', () => {
-  const refreshButton = document.getElementById('refresh-messages');
-  if (refreshButton) {
-    refreshButton.addEventListener('click', () => {
-      loadInquiryMessages();
-      showNotification('Messages refreshed');
-    });
-  }
-
-  // Load messages if we're on the inquiry messages page
-  if (document.getElementById('inquiry-messages-page')) {
-    loadInquiryMessages();
-  }
-});
-
-// Cancel delete button
-cancelDeleteBtn.addEventListener('click', () => {
-  deleteModal.classList.add('hidden');
-  currentDeleteId = null;
-});
-
-// Show notification
-function showNotification(message, type = 'success') {
-  notificationMessage.textContent = message;
-  
-  if (type === 'error') {
-    notification.classList.remove('bg-green-500');
-    notification.classList.add('bg-red-500');
-  } else {
-    notification.classList.remove('bg-red-500');
-    notification.classList.add('bg-green-500');
-  }
-  
-  notification.classList.remove('opacity-0', 'translate-y-[-20px]');
-  notification.classList.add('opacity-100', 'translate-y-0');
-  
-  setTimeout(() => {
-    notification.classList.remove('opacity-100', 'translate-y-0');
-    notification.classList.add('opacity-0', 'translate-y-[-20px]');
-  }, 3000);
-}
-
-// Initialize the dashboard on load
-navigateToDefaultPage();
-
-function navigateToDefaultPage() {
-  // Check if user is authenticated
-  const user = auth.currentUser;
-  if (user) {
-    navigateTo('dashboard');
-  }
-}
-
-// Load inquiry messages
-function loadInquiryMessages() {
-  const inquiryMessagesContainer = document.getElementById('inquiryMessagesContainer');
-  inquiryMessagesContainer.innerHTML = '<div class="col-12 text-center"><p>Loading messages...</p></div>';
-
-  db.collection('inquiryMessages').orderBy('timestamp', 'desc').get()
-    .then(snapshot => {
-      if (snapshot.empty) {
-        inquiryMessagesContainer.innerHTML = '<div class="col-12 text-center"><p>No inquiry messages found.</p></div>';
-        return;
-      }
-
-      inquiryMessagesContainer.innerHTML = '';
-      snapshot.forEach(doc => {
-        const message = doc.data();
-        const date = message.timestamp ? message.timestamp.toDate() : new Date();
-        const formattedDate = date.toLocaleString();
-        
-        const messageCard = document.createElement('div');
-        messageCard.className = 'col-md-6 col-lg-4 mb-4';
-        messageCard.innerHTML = `
-          <div class="card h-100">
-            <div class="card-body">
-              <h5 class="card-title">${message.firstName} ${message.lastName}</h5>
-              <h6 class="card-subtitle mb-2 text-muted">${message.email}</h6>
-              <p class="card-text">${message.message}</p>
-              <div class="card-footer bg-transparent border-0">
-                <small class="text-muted">
-                  <i class="far fa-clock"></i> ${formattedDate}
-                </small>
-                <button class="btn btn-sm btn-danger float-right delete-message" data-id="${doc.id}">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        `;
-
-        // Add delete functionality
-        const deleteBtn = messageCard.querySelector('.delete-message');
-        deleteBtn.addEventListener('click', () => deleteMessage(doc.id));
-
-        inquiryMessagesContainer.appendChild(messageCard);
-      });
-    })
-    .catch(error => {
-      console.error("Error loading inquiry messages: ", error);
-      inquiryMessagesContainer.innerHTML = 
-        '<div class="col-12"><div class="alert alert-danger">Error loading messages. Please try again.</div></div>';
-    });
-}
-
-// Delete message function
-function deleteMessage(messageId) {
-  if (confirm('Are you sure you want to delete this message?')) {
-    db.collection('inquiryMessages').doc(messageId).delete()
-      .then(() => {
-        showNotification('Message deleted successfully');
-        loadInquiryMessages(); // Reload the messages
-      })
-      .catch(error => {
-        console.error("Error deleting message: ", error);
-        showNotification('Error deleting message', 'error');
-      });
-  }
-}
-
-// Add event listener for refresh button
-document.addEventListener('DOMContentLoaded', () => {
-  const refreshButton = document.getElementById('refresh-messages');
-  if (refreshButton) {
-    refreshButton.addEventListener('click', () => {
-      loadInquiryMessages();
-      showNotification('Messages refreshed');
-    });
-  }
-
-  // Load messages if we're on the inquiry messages page
-  if (document.getElementById('inquiry-messages-page')) {
-    loadInquiryMessages();
-  }
-});
-
-// Cancel delete button
-cancelDeleteBtn.addEventListener('click', () => {
-  deleteModal.classList.add('hidden');
-  currentDeleteId = null;
-});
-
-// Show notification
-function showNotification(message, type = 'success') {
-  notificationMessage.textContent = message;
-  
-  if (type === 'error') {
-    notification.classList.remove('bg-green-500');
-    notification.classList.add('bg-red-500');
-  } else {
-    notification.classList.remove('bg-red-500');
-    notification.classList.add('bg-green-500');
-  }
-  
-  notification.classList.remove('opacity-0', 'translate-y-[-20px]');
-  notification.classList.add('opacity-100', 'translate-y-0');
-  
-  setTimeout(() => {
-    notification.classList.remove('opacity-100', 'translate-y-0');
-    notification.classList.add('opacity-0', 'translate-y-[-20px]');
-  }, 3000);
-}
-
-// Initialize the dashboard on load
-navigateToDefaultPage();
-
-function navigateToDefaultPage() {
-  // Check if user is authenticated
-  const user = auth.currentUser;
-  if (user) {
-    navigateTo('dashboard');
-  }
-}
-
-// Load inquiry messages
-function loadInquiryMessages() {
-  const inquiryMessagesContainer = document.getElementById('inquiryMessagesContainer');
-  inquiryMessagesContainer.innerHTML = '<div class="col-12 text-center"><p>Loading messages...</p></div>';
-
-  db.collection('inquiryMessages').orderBy('timestamp', 'desc').get()
-    .then(snapshot => {
-      if (snapshot.empty) {
-        inquiryMessagesContainer.innerHTML = '<div class="col-12 text-center"><p>No inquiry messages found.</p></div>';
-        return;
-      }
-
-      inquiryMessagesContainer.innerHTML = '';
-      snapshot.forEach(doc => {
-        const message = doc.data();
-        const date = message.timestamp ? message.timestamp.toDate() : new Date();
-        const formattedDate = date.toLocaleString();
-        
-        const messageCard = document.createElement('div');
-        messageCard.className = 'col-md-6 col-lg-4 mb-4';
-        messageCard.innerHTML = `
-          <div class="card h-100">
-            <div class="card-body">
-              <h5 class="card-title">${message.firstName} ${message.lastName}</h5>
-              <h6 class="card-subtitle mb-2 text-muted">${message.email}</h6>
-              <p class="card-text">${message.message}</p>
-              <div class="card-footer bg-transparent border-0">
-                <small class="text-muted">
-                  <i class="far fa-clock"></i> ${formattedDate}
-                </small>
-                <button class="btn btn-sm btn-danger float-right delete-message" data-id="${doc.id}">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        `;
-
-        // Add delete functionality
-        const deleteBtn = messageCard.querySelector('.delete-message');
-        deleteBtn.addEventListener('click', () => deleteMessage(doc.id));
-
-        inquiryMessagesContainer.appendChild(messageCard);
-      });
-    })
-    .catch(error => {
-      console.error("Error loading inquiry messages: ", error);
-      inquiryMessagesContainer.innerHTML = 
-        '<div class="col-12"><div class="alert alert-danger">Error loading messages. Please try again.</div></div>';
-    });
-}
-
-// Delete message function
-function deleteMessage(messageId) {
-  if (confirm('Are you sure you want to delete this message?')) {
-    db.collection('inquiryMessages').doc(messageId).delete()
-      .then(() => {
-        showNotification('Message deleted successfully');
-        loadInquiryMessages(); // Reload the messages
-      })
-      .catch(error => {
-        console.error("Error deleting message: ", error);
-        showNotification('Error deleting message', 'error');
-      });
-  }
-}
-
-// Add event listener for refresh button
-document.addEventListener('DOMContentLoaded', () => {
-  const refreshButton = document.getElementById('refresh-messages');
-  if (refreshButton) {
-    refreshButton.addEventListener('click', () => {
-      loadInquiryMessages();
-      showNotification('Messages refreshed');
-    });
-  }
-
-  // Load messages if we're on the inquiry messages page
-  if (document.getElementById('inquiry-messages-page')) {
-    loadInquiryMessages();
-  }
-});
-
-// Cancel delete button
-cancelDeleteBtn.addEventListener('click', () => {
-  deleteModal.classList.add('hidden');
-  currentDeleteId = null;
-});
-
-// Show notification
-function showNotification(message, type = 'success') {
-  notificationMessage.textContent = message;
-  
-  if (type === 'error') {
-    notification.classList.remove('bg-green-500');
-    notification.classList.add('bg-red-500');
-  } else {
-    notification.classList.remove('bg-red-500');
-    notification.classList.add('bg-green-500');
-  }
-  
-  notification.classList.remove('opacity-0', 'translate-y-[-20px]');
-  notification.classList.add('opacity-100', 'translate-y-0');
-  
-  setTimeout(() => {
-    notification.classList.remove('opacity-100', 'translate-y-0');
-    notification.classList.add('opacity-0', 'translate-y-[-20px]');
-  }, 3000);
-}
-
-// Initialize the dashboard on load
-navigateToDefaultPage();
-
-function navigateToDefaultPage() {
-  // Check if user is authenticated
-  const user = auth.currentUser;
-  if (user) {
-    navigateTo('dashboard');
-  }
-}
-
-// Load inquiry messages
-function loadInquiryMessages() {
-  const inquiryMessagesContainer = document.getElementById('inquiryMessagesContainer');
-  inquiryMessagesContainer.innerHTML = '<div class="col-12 text-center"><p>Loading messages...</p></div>';
-
-  db.collection('inquiryMessages').orderBy('timestamp', 'desc').get()
-    .then(snapshot => {
-      if (snapshot.empty) {
-        inquiryMessagesContainer.innerHTML = '<div class="col-12 text-center"><p>No inquiry messages found.</p></div>';
-        return;
-      }
-
-      inquiryMessagesContainer.innerHTML = '';
-      snapshot.forEach(doc => {
-        const message = doc.data();
-        const date = message.timestamp ? message.timestamp.toDate() : new Date();
-        const formattedDate = date.toLocaleString();
-        
-        const messageCard = document.createElement('div');
-        messageCard.className = 'col-md-6 col-lg-4 mb-4';
-        messageCard.innerHTML = `
-          <div class="card h-100">
-            <div class="card-body">
-              <h5 class="card-title">${message.firstName} ${message.lastName}</h5>
-              <h6 class="card-subtitle mb-2 text-muted">${message.email}</h6>
-              <p class="card-text">${message.message}</p>
-              <div class="card-footer bg-transparent border-0">
-                <small class="text-muted">
-                  <i class="far fa-clock"></i> ${formattedDate}
-                </small>
-                <button class="btn btn-sm btn-danger float-right delete-message" data-id="${doc.id}">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        `;
-
-        // Add delete functionality
-        const deleteBtn = messageCard.querySelector('.delete-message');
-        deleteBtn.addEventListener('click', () => deleteMessage(doc.id));
-
-        inquiryMessagesContainer.appendChild(messageCard);
-      });
-    })
-    .catch(error => {
-      console.error("Error loading inquiry messages: ", error);
-      inquiryMessagesContainer.innerHTML = 
-        '<div class="col-12"><div class="alert alert-danger">Error loading messages. Please try again.</div></div>';
-    });
-}
-
-// Delete message function
-function deleteMessage(messageId) {
-  if (confirm('Are you sure you want to delete this message?')) {
-    db.collection('inquiryMessages').doc(messageId).delete()
-      .then(() => {
-        showNotification('Message deleted successfully');
-        loadInquiryMessages(); // Reload the messages
-      })
-      .catch(error => {
-        console.error("Error deleting message: ", error);
-        showNotification('Error deleting message', 'error');
-      });
-  }
-}
-
-// Add event listener for refresh button
-document.addEventListener('DOMContentLoaded', () => {
-  const refreshButton = document.getElementById('refresh-messages');
-  if (refreshButton) {
-    refreshButton.addEventListener('click', () => {
-      loadInquiryMessages();
-      showNotification('Messages refreshed');
-    });
-  }
-
-  // Load messages if we're on the inquiry messages page
-  if (document.getElementById('inquiry-messages-page')) {
-    loadInquiryMessages();
-  }
-});
-
-// Cancel delete button
-cancelDeleteBtn.addEventListener('click', () => {
-  deleteModal.classList.add('hidden');
-  currentDeleteId = null;
-});
-
-// Show notification
-function showNotification(message, type = 'success') {
-  notificationMessage.textContent = message;
-  
-  if (type === 'error') {
-    notification.classList.remove('bg-green-500');
-    notification.classList.add('bg-red-500');
-  } else {
-    notification.classList.remove('bg-red-500');
-    notification.classList.add('bg-green-500');
-  }
-  
-  notification.classList.remove('opacity-0', 'translate-y-[-20px]');
-  notification.classList.add('opacity-100', 'translate-y-0');
-  
-  setTimeout(() => {
-    notification.classList.remove('opacity-100', 'translate-y-0');
-    notification.classList.add('opacity-0', 'translate-y-[-20px]');
-  }, 3000);
-}
-
-// Initialize the dashboard on load
-navigateToDefaultPage();
-
-function navigateToDefaultPage() {
-  // Check if user is authenticated
-  const user = auth.currentUser;
-  if (user) {
-    navigateTo('dashboard');
-  }
-}
-
-// Load inquiry messages
-function loadInquiryMessages() {
-  const inquiryMessagesContainer = document.getElementById('inquiryMessagesContainer');
-  inquiryMessagesContainer.innerHTML = '<div class="col-12 text-center"><p>Loading messages...</p></div>';
-
-  db.collection('inquiryMessages').orderBy('timestamp', 'desc').get()
-    .then(snapshot => {
-      if (snapshot.empty) {
-        inquiryMessagesContainer.innerHTML = '<div class="col-12 text-center"><p>No inquiry messages found.</p></div>';
-        return;
-      }
-
-      inquiryMessagesContainer.innerHTML = '';
-      snapshot.forEach(doc => {
-        const message = doc.data();
-        const date = message.timestamp ? message.timestamp.toDate() : new Date();
-        const formattedDate = date.toLocaleString();
-        
-        const messageCard = document.createElement('div');
-        messageCard.className = 'col-md-6 col-lg-4 mb-4';
-        messageCard.innerHTML = `
-          <div class="card h-100">
-            <div class="card-body">
-              <h5 class="card-title">${message.firstName} ${message.lastName}</h5>
-              <h6 class="card-subtitle mb-2 text-muted">${message.email}</h6>
-              <p class="card-text">${message.message}</p>
-              <div class="card-footer bg-transparent border-0">
-                <small class="text-muted">
-                  <i class="far fa-clock"></i> ${formattedDate}
-                </small>
-                <button class="btn btn-sm btn-danger float-right delete-message" data-id="${doc.id}">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        `;
-
-        // Add delete functionality
-        const deleteBtn = messageCard.querySelector('.delete-message');
-        deleteBtn.addEventListener('click', () => deleteMessage(doc.id));
-
-        inquiryMessagesContainer.appendChild(messageCard);
-      });
-    })
-    .catch(error => {
-      console.error("Error loading inquiry messages: ", error);
-      inquiryMessagesContainer.innerHTML = 
-        '<div class="col-12"><div class="alert alert-danger">Error loading messages. Please try again.</div></div>';
-    });
-}
-
-// Delete message function
-function deleteMessage(messageId) {
-  if (confirm('Are you sure you want to delete this message?')) {
-    db.collection('inquiryMessages').doc(messageId).delete()
-      .then(() => {
-        showNotification('Message deleted successfully');
-        loadInquiryMessages(); // Reload the messages
-      })
-      .catch(error => {
-        console.error("Error deleting message: ", error);
-        showNotification('Error deleting message', 'error');
-      });
-  }
-}
-
-// Add event listener for refresh button
-document.addEventListener('DOMContentLoaded', () => {
-  const refreshButton = document.getElementById('refresh-messages');
-  if (refreshButton) {
-    refreshButton.addEventListener('click', () => {
-      loadInquiryMessages();
-      showNotification('Messages refreshed');
-    });
-  }
-
-  // Load messages if we're on the inquiry messages page
-  if (document.getElementById('inquiry-messages-page')) {
-    loadInquiryMessages();
-  }
-});
-
-// Cancel delete button
-cancelDeleteBtn.addEventListener('click', () => {
-  deleteModal.classList.add('hidden');
-  currentDeleteId = null;
-});
-
-// Show notification
-function showNotification(message, type = 'success') {
-  notificationMessage.textContent = message;
-  
-  if (type === 'error') {
-    notification.classList.remove('bg-green-500');
-    notification.classList.add('bg-red-500');
-  } else {
-    notification.classList.remove('bg-red-500');
-    notification.classList.add('bg-green-500');
-  }
-  
-  notification.classList.remove('opacity-0', 'translate-y-[-20px]');
-  notification.classList.add('opacity-100', 'translate-y-0');
-  
-  setTimeout(() => {
-    notification.classList.remove('opacity-100', 'translate-y-0');
-    notification.classList.add('opacity-0', 'translate-y-[-20px]');
-  }, 3000);
-}
-
-// Initialize the dashboard on load
-navigateToDefaultPage();
-
-function navigateToDefaultPage() {
-  // Check if user is authenticated
-  const user = auth.currentUser;
-  if (user) {
