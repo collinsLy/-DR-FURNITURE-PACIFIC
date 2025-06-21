@@ -11,8 +11,33 @@ document.addEventListener('DOMContentLoaded', () => {
             const message = document.getElementById('message').value;
 
             if (!firstName || !lastName || !email || !message) {
-                alert('Please fill in all fields.');
+                toastError('Please fill in all fields.');
                 return;
+            }
+
+            try {
+                // Show loading toast
+                toastInfo('Sending your message...');
+
+                // Save to Firebase
+                await db.collection('contactMessages').add({
+                    firstName: firstName,
+                    lastName: lastName,
+                    email: email,
+                    message: message,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    status: 'new'
+                });
+
+                // Show success toast
+                toastSuccess('Thank you! Your message has been sent successfully. We will get back to you soon.');
+                
+                // Reset form
+                contactForm.reset();
+
+            } catch (error) {
+                console.error('Error sending message:', error);
+                toastError('Sorry, there was an error sending your message. Please try again.');
             }
 
             try {
