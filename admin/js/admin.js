@@ -619,6 +619,7 @@ function loadInquiryMessages() {
               <div>
                 <h3 class="text-lg font-medium text-gray-900">${message.firstName || 'N/A'} ${message.lastName || ''}</h3>
                 <p class="text-sm text-gray-500">${message.email || 'No email'}</p>
+                ${message.phone ? `<p class="text-sm text-gray-500"><i class="fas fa-phone mr-1"></i> ${message.phone}</p>` : ''}
               </div>
               <button class="text-red-600 hover:text-red-900 delete-message" data-id="${doc.id}">
                 <i class="fas fa-trash-alt"></i>
