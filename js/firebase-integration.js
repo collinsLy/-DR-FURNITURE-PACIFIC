@@ -101,14 +101,14 @@ function loadFeaturedProducts() {
   // Clear any static content
   productSection.innerHTML = '';
 
-  // Get featured furniture items (limit to 3)
-  furnitureCollection.where('featured', '==', true).limit(3).get()
+  // Get popular furniture items (limit to 3)
+  furnitureCollection.where('isPopular', '==', true).limit(3).get()
     .then(snapshot => {
       if (snapshot.empty) {
-        console.log('No featured furniture items found in Firebase.');
+        console.log('No popular furniture items found in Firebase.');
         return;
       }
-      console.log(`Found ${snapshot.size} featured furniture items.`);
+      console.log(`Found ${snapshot.size} popular furniture items.`);
 
       let count = 0;
       snapshot.forEach(doc => {
@@ -121,7 +121,7 @@ function loadFeaturedProducts() {
       });
     })
     .catch(error => {
-      console.error('Error getting featured furniture from Firebase:', error);
+      console.error('Error getting popular furniture from Firebase:', error);
     });
 }
 
