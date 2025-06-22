@@ -1,3 +1,9 @@
+// Check if Firebase is available
+if (typeof firebase === 'undefined') {
+  console.error('Firebase SDK not loaded. Please check your script tags.');
+  // Exit early if Firebase is not available
+}
+
 // Firebase Configuration and Initialization
 const firebaseConfig = {
   // Your Firebase configuration will go here
@@ -16,16 +22,52 @@ let app, db, furnitureCollection;
 
 // Wait for DOM to be loaded before initializing Firebase
 document.addEventListener('DOMContentLoaded', function() {
-  // Initialize Firebase
-  app = firebase.initializeApp(firebaseConfig);
-  db = firebase.firestore();
-  
-  // Collection reference
-  furnitureCollection = db.collection('furnitureItems');
-  
-  // Now that Firebase is initialized, load page content
-  initializePage();
+  try {
+    // Check if Firebase is available
+    if (typeof firebase === 'undefined') {
+      throw new Error('Firebase SDK not loaded');
+    }
+    
+    // Initialize Firebase
+    app = firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    
+    // Collection reference
+    furnitureCollection = db.collection('furnitureItems');
+    
+    console.log('Firebase initialized successfully');
+    
+    // Now that Firebase is initialized, load page content
+    initializePage();
+  } catch (error) {
+    console.error('Error initializing Firebase:', error);
+    // Show user-friendly error message
+    showFirebaseError();
+  }
 });
+
+function showFirebaseError() {
+  const errorMessage = `
+    <div class="col-12 text-center py-5">
+      <div class="alert alert-warning" role="alert">
+        <h5>Unable to load furniture data</h5>
+        <p>We're experiencing technical difficulties. Please try refreshing the page.</p>
+      </div>
+    </div>
+  `;
+  
+  const containers = [
+    document.getElementById('furnitureContainer'),
+    document.getElementById('product-list'),
+    document.querySelector('.popular-product .row')
+  ];
+  
+  containers.forEach(container => {
+    if (container) {
+      container.innerHTML = errorMessage;
+    }
+  });
+}
 
 function initializePage() {
   // Determine which page we're on
@@ -324,6 +366,12 @@ function loadCategories() {
 
   // Check if we're on the shop page and the filter exists
   if (!categoryFilter) return;
+
+  // Check if Firebase is initialized
+  if (!furnitureCollection) {
+    console.error('Firebase not initialized for loadCategories');
+    return;
+  }
 
   // Get unique categories from furniture items
   furnitureCollection.get()
