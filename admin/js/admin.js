@@ -516,7 +516,7 @@ addFurnitureForm.addEventListener('submit', e => {
     const mediaTypeSelects = document.querySelectorAll('#image-inputs select[name="mediaType"]');
 
     const mediaData = [];
-    const images = []; // Keep for backward compatibility
+    const imageUrls = []; // Keep for backward compatibility
 
     imageInputs.forEach((input, index) => {
       if (input.value.trim()) {
