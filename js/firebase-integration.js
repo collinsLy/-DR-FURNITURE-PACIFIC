@@ -154,13 +154,21 @@ function loadPopularProducts() {
     return;
   }
 
+  console.log('loadPopularProducts called');
+
+  // Clear any existing content in popular section only
+  const existingPopularItems = popularSection.querySelectorAll('.col-12.col-md-4.col-lg-4');
+  existingPopularItems.forEach(item => item.remove());
+
   // Get popular furniture items (limit to 3)
   furnitureCollection.where('isPopular', '==', true).limit(3).get()
     .then(snapshot => {
       if (snapshot.empty) {
-        console.log('No popular furniture items found');
+        console.log('No popular furniture items found for popular section');
         return;
       }
+
+      console.log(`Found ${snapshot.size} popular furniture items for popular section.`);
 
       snapshot.forEach(doc => {
         const item = doc.data();
