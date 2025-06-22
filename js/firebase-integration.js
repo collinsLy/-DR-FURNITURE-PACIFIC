@@ -195,9 +195,17 @@ function loadShopProducts() {
   // Clear existing content to prevent duplication
   furnitureContainer.innerHTML = '';
 
-  // Get all furniture items, ordered by timestamp descending
-  furnitureCollection.orderBy('timestamp', 'desc').get()
+  // Set a timeout for the query
+  const queryTimeout = setTimeout(() => {
+    if (loadingIndicator) {
+      loadingIndicator.innerHTML = '<div class="text-center text-orange-500 py-4">Connection taking longer than expected. Please check your internet connection.</div>';
+    }
+  }, 5000);
+
+  // Get all furniture items with optimized query
+  furnitureCollection.limit(50).get()
     .then(snapshot => {
+      clearTimeout(queryTimeout);
       // Hide loading indicator
       if (loadingIndicator) loadingIndicator.style.display = 'none';
 
@@ -214,27 +222,27 @@ function loadShopProducts() {
         const col = document.createElement('div');
         col.className = 'col-12 col-md-4 col-lg-3 mb-5';
 
-        let mainMediaUrl = item.imageUrl;
+        let mainMediaUrl = item.imageUrl || 'images/placeholder.png';
         let isVideo = false;
 
         // Check for new media format
         if (item.mediaData && item.mediaData.length > 0) {
-          mainMediaUrl = item.mediaData[0].url;
+          mainMediaUrl = item.mediaData[0].url || 'images/placeholder.png';
           isVideo = item.mediaData[0].type === 'video';
         } else if (item.images && item.images.length > 0) {
-          mainMediaUrl = item.images[0];
+          mainMediaUrl = item.images[0] || 'images/placeholder.png';
         }
 
         const mediaElement = isVideo ? 
-          `<video src="${mainMediaUrl}" class="img-fluid product-thumbnail" muted loop onmouseenter="this.play()" onmouseleave="this.pause()"></video>` :
-          `<img src="${mainMediaUrl}" class="img-fluid product-thumbnail">`;
+          `<video src="${mainMediaUrl}" class="img-fluid product-thumbnail" muted loop onmouseenter="this.play()" onmouseleave="this.pause()" onerror="this.style.display='none'"></video>` :
+          `<img src="${mainMediaUrl}" class="img-fluid product-thumbnail" onerror="this.src='images/placeholder.png'" loading="lazy">`;
 
         col.innerHTML = `
           <a class="product-item" href="furniture-detail.html?id=${doc.id}">
             ${mediaElement}
-            <h3 class="product-title">${item.name}</h3>
-            <strong class="product-price">Ksh${item.price.toFixed(2)}</strong>
-            <span class="icon-cross add-to-cart-btn" data-id="${doc.id}" data-name="${item.name}" data-price="${item.price}" data-image="${mainMediaUrl}" onclick="event.preventDefault(); event.stopPropagation();">
+            <h3 class="product-title">${item.name || 'Unnamed Item'}</h3>
+            <strong class="product-price">Ksh${(item.price || 0).toFixed(2)}</strong>
+            <span class="icon-cross add-to-cart-btn" data-id="${doc.id}" data-name="${item.name || 'Unnamed Item'}" data-price="${item.price || 0}" data-image="${mainMediaUrl}" onclick="event.preventDefault(); event.stopPropagation();">
               <img src="images/cross.svg" class="img-fluid">
             </span>
           </a>
@@ -246,8 +254,11 @@ function loadShopProducts() {
       furnitureContainer.appendChild(fragment);
     })
     .catch(error => {
+      clearTimeout(queryTimeout);
       console.error('Error getting furniture items:', error);
-      if (loadingIndicator) loadingIndicator.style.display = 'none';
+      if (loadingIndicator) {
+        loadingIndicator.innerHTML = '<div class="text-center text-red-500 py-4">Failed to load furniture items. Please refresh the page.</div>';
+      }
     });
 }
 

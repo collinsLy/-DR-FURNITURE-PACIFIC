@@ -292,10 +292,16 @@ function loadDashboard() {
 function loadFurnitureList() {
   furnitureTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-500 py-4">Loading furniture items...</td></tr>';
 
+  // Set timeout for long loading
+  const loadTimeout = setTimeout(() => {
+    furnitureTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-orange-500 py-4">Loading taking longer than expected...</td></tr>';
+  }, 5000);
+
   db.collection('furnitureItems')
-    .orderBy('timestamp', 'desc')
+    .limit(50)
     .get()
     .then(snapshot => {
+      clearTimeout(loadTimeout);
       if (snapshot.empty) {
         furnitureTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-500 py-4">No furniture items found</td></tr>';
         return;

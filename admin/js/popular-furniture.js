@@ -29,8 +29,14 @@ function loadAllFurniture() {
   const furnitureGrid = document.getElementById('furnitureGrid');
   furnitureGrid.innerHTML = '<div class="text-center text-gray-500 py-4">Loading furniture items...</div>';
 
-  furnitureCollection.get()
+  // Set timeout for long loading
+  const loadTimeout = setTimeout(() => {
+    furnitureGrid.innerHTML = '<div class="text-center text-orange-500 py-4">Loading taking longer than expected...</div>';
+  }, 5000);
+
+  furnitureCollection.limit(100).get()
     .then(snapshot => {
+      clearTimeout(loadTimeout);
       if (snapshot.empty) {
         furnitureGrid.innerHTML = '<div class="text-center text-gray-500 py-4">No furniture items found</div>';
         return;
