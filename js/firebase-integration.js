@@ -1,13 +1,5 @@
-// Check if Firebase is available
-if (typeof firebase === 'undefined') {
-  console.error('Firebase SDK not loaded. Please check your script tags.');
-  // Exit early if Firebase is not available
-}
-
 // Firebase Configuration and Initialization
 const firebaseConfig = {
-  // Your Firebase configuration will go here
-  // Replace with your actual Firebase project configuration
   apiKey: "AIzaSyC-G1rhKKGLDbN2dFF1vbcUVUxumnSC5Lo",
   authDomain: "dr-furniture-pacific.firebaseapp.com",
   projectId: "dr-furniture-pacific",
@@ -17,33 +9,49 @@ const firebaseConfig = {
   measurementId: "G-FDKC573E1J"
 };
 
-// Initialize Firebase
+// Initialize Firebase variables
 let app, db, furnitureCollection;
+let firebaseInitialized = false;
 
-// Wait for DOM to be loaded before initializing Firebase
-document.addEventListener('DOMContentLoaded', function() {
-  try {
-    // Check if Firebase is available
-    if (typeof firebase === 'undefined') {
-      throw new Error('Firebase SDK not loaded');
+// Function to initialize Firebase
+function initializeFirebase() {
+  return new Promise((resolve, reject) => {
+    try {
+      // Check if Firebase is available
+      if (typeof firebase === 'undefined') {
+        throw new Error('Firebase SDK not loaded');
+      }
+      
+      // Initialize Firebase
+      app = firebase.initializeApp(firebaseConfig);
+      db = firebase.firestore();
+      
+      // Collection reference
+      furnitureCollection = db.collection('furnitureItems');
+      firebaseInitialized = true;
+      
+      console.log('Firebase initialized successfully');
+      resolve();
+    } catch (error) {
+      console.error('Error initializing Firebase:', error);
+      reject(error);
     }
-    
-    // Initialize Firebase
-    app = firebase.initializeApp(firebaseConfig);
-    db = firebase.firestore();
-    
-    // Collection reference
-    furnitureCollection = db.collection('furnitureItems');
-    
-    console.log('Firebase initialized successfully');
-    
-    // Now that Firebase is initialized, load page content
-    initializePage();
-  } catch (error) {
-    console.error('Error initializing Firebase:', error);
-    // Show user-friendly error message
-    showFirebaseError();
-  }
+  });
+}
+
+// Wait for DOM and Firebase to be ready
+document.addEventListener('DOMContentLoaded', function() {
+  // Add a small delay to ensure Firebase SDK is fully loaded
+  setTimeout(() => {
+    initializeFirebase()
+      .then(() => {
+        initializePage();
+      })
+      .catch(error => {
+        console.error('Firebase initialization failed:', error);
+        showFirebaseError();
+      });
+  }, 100);
 });
 
 function showFirebaseError() {
@@ -96,7 +104,14 @@ function loadFeaturedProducts() {
   // Check if we're on the home page and the product section exists
   if (!productSection || !window.location.pathname.includes('index')) return;
 
-  console.log('loadFeaturedProducts called'); // Add this line
+  // Check if Firebase is initialized
+  if (!firebaseInitialized || !furnitureCollection) {
+    console.log('Firebase not ready, retrying loadFeaturedProducts...');
+    setTimeout(() => loadFeaturedProducts(), 500);
+    return;
+  }
+
+  console.log('loadFeaturedProducts called');
 
   // Clear any static content
   productSection.innerHTML = '';
@@ -131,6 +146,13 @@ function loadPopularProducts() {
 
   // Check if we're on the home page and the popular section exists
   if (!popularSection || !window.location.pathname.includes('index')) return;
+
+  // Check if Firebase is initialized
+  if (!firebaseInitialized || !furnitureCollection) {
+    console.log('Firebase not ready, retrying loadPopularProducts...');
+    setTimeout(() => loadPopularProducts(), 500);
+    return;
+  }
 
   // Get popular furniture items (limit to 3)
   furnitureCollection.orderBy('views', 'desc').limit(3).get()
@@ -187,6 +209,13 @@ function loadShopProducts() {
 
   // Check if we're on the shop page and the container exists
   if (!furnitureContainer) return;
+
+  // Check if Firebase is initialized
+  if (!firebaseInitialized || !furnitureCollection) {
+    console.log('Firebase not ready, retrying loadShopProducts...');
+    setTimeout(() => loadShopProducts(), 500);
+    return;
+  }
 
   // Show loading indicator
   if (loadingIndicator) loadingIndicator.style.display = 'block';
@@ -379,8 +408,9 @@ function loadCategories() {
   if (!categoryFilter) return;
 
   // Check if Firebase is initialized
-  if (!furnitureCollection) {
+  if (!firebaseInitialized || !furnitureCollection) {
     console.error('Firebase not initialized for loadCategories');
+    setTimeout(() => loadCategories(), 500); // Retry after 500ms
     return;
   }
 
