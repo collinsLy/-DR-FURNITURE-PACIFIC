@@ -234,6 +234,9 @@
 			<i class="fab fa-whatsapp"></i>
 		</a>
 
+		<!-- Firebase SDK -->
+		<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 		<script src="js/bootstrap.bundle.min.js"></script>
 		<script src="js/tiny-slider.js"></script>
 		<script src="js/cart.js"></script>
@@ -243,9 +246,6 @@
 		<!-- Shop Page Specific Script -->
 		<script>
 			document.addEventListener('DOMContentLoaded', function() {
-				// Load categories for the filter dropdown
-				loadCategories();
-
 				// Set up event listeners for filters
 				document.getElementById('categoryFilter').addEventListener('change', applyFilters);
 				document.getElementById('priceFilter').addEventListener('change', applyFilters);

@@ -12,11 +12,38 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+let app, db, furnitureCollection;
 
-// Collection reference
-const furnitureCollection = db.collection('furnitureItems');
+// Wait for DOM to be loaded before initializing Firebase
+document.addEventListener('DOMContentLoaded', function() {
+  // Initialize Firebase
+  app = firebase.initializeApp(firebaseConfig);
+  db = firebase.firestore();
+  
+  // Collection reference
+  furnitureCollection = db.collection('furnitureItems');
+  
+  // Now that Firebase is initialized, load page content
+  initializePage();
+});
+
+function initializePage() {
+  // Determine which page we're on
+  const currentPath = window.location.pathname;
+
+  if (currentPath.includes('index.html') || currentPath.endsWith('/')) {
+    // Home page
+    loadFeaturedProducts();
+    loadPopularProducts();
+  } else if (currentPath.includes('shop-firebase.html')) {
+    // Shop page
+    loadShopProducts();
+    loadCategories();
+  } else if (currentPath.includes('cart.html')) {
+    // Cart/product detail page
+    loadProductDetails();
+  }
+}
 
 // ===== HOME PAGE FUNCTIONS =====
 
@@ -400,42 +427,24 @@ function createFurnitureItemHTML(id, item) {
   `;
 }
 
-// Initialize functions based on current page
-document.addEventListener('DOMContentLoaded', () => {
-  // Determine which page we're on
-  const currentPath = window.location.pathname;
-
-  if (currentPath.includes('index.html')) {
-    // Home page
-    loadFeaturedProducts();
-    loadPopularProducts();
-  } else if (currentPath.includes('shop-firebase.html')) {
-    // Shop page
-    loadShopProducts();
-  } else if (currentPath.includes('cart.html')) {
-    // Cart/product detail page
-    loadProductDetails();
-  }
-
-  // Add event listener for "Add to Cart" buttons using event delegation
-  document.body.addEventListener('click', (event) => {
-    if (event.target.closest('.add-to-cart-btn')) {
-      const button = event.target.closest('.add-to-cart-btn');
-      const product = {
-        id: button.dataset.id,
-        name: button.dataset.name,
-        price: parseFloat(button.dataset.price),
-        imageUrl: button.dataset.image
-      };
-      if (window.addToCart) {
-        window.addToCart(product);
-        toastSuccess(`${product.name} added to cart!`);
-      } else {
-        console.error('addToCart function not found. Make sure cart.js is loaded.');
-        toastError('Error adding item to cart. Please try again.');
-      }
+// Add event listener for "Add to Cart" buttons using event delegation
+document.body.addEventListener('click', (event) => {
+  if (event.target.closest('.add-to-cart-btn')) {
+    const button = event.target.closest('.add-to-cart-btn');
+    const product = {
+      id: button.dataset.id,
+      name: button.dataset.name,
+      price: parseFloat(button.dataset.price),
+      imageUrl: button.dataset.image
+    };
+    if (window.addToCart) {
+      window.addToCart(product);
+      toastSuccess(`${product.name} added to cart!`);
+    } else {
+      console.error('addToCart function not found. Make sure cart.js is loaded.');
+      toastError('Error adding item to cart. Please try again.');
     }
-  });
+  }
 });
 
 function createProductCard(furniture) {
