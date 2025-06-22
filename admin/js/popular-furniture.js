@@ -1,15 +1,12 @@
 
 // Firebase configuration and initialization
-let db;
 let furnitureCollection;
 
 // Initialize Firebase
 window.addEventListener('load', function() {
   if (typeof firebase !== 'undefined') {
     try {
-      // Initialize Firebase with config from firebase-config.js
-      firebase.initializeApp(firebaseConfig);
-      db = firebase.firestore();
+      // Use the global db from firebase-config.js
       furnitureCollection = db.collection('furnitureItems');
       
       // Check authentication

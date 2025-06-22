@@ -16,7 +16,8 @@ firebase.initializeApp(firebaseConfig);
 // Initialize Firebase services
 const auth = firebase.auth();
 const db = firebase.firestore();
-const storage = firebase.storage();
+// Note: Firebase Storage is not being used in the current implementation
+// If you need storage functionality, you'll need to include the storage SDK
 
 // Enable Firestore offline persistence if needed
 // db.enablePersistence()
