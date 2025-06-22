@@ -31,7 +31,4 @@ const db = firebase.firestore();
 //     }
 //   });
 
-// Firestore settings
-db.settings({
-  timestampsInSnapshots: true
-});
+// Firestore settings - timestampsInSnapshots is now default behavior

@@ -522,7 +522,6 @@ addFurnitureForm.addEventListener('submit', e => {
     const mediaTypeSelects = document.querySelectorAll('#image-inputs select[name="mediaType"]');
 
     const mediaData = [];
-    const imageUrls = []; // Keep for backward compatibility
 
     imageInputs.forEach((input, index) => {
       if (input.value.trim()) {
@@ -532,7 +531,6 @@ addFurnitureForm.addEventListener('submit', e => {
           type: mediaType
         };
         mediaData.push(mediaItem);
-        images.push(input.value.trim()); // Backward compatibility
 
         console.log('Adding media item:', mediaItem);
       }
@@ -543,16 +541,16 @@ addFurnitureForm.addEventListener('submit', e => {
   const featured = document.getElementById('furniture-featured').checked;
 
   // Keep backward compatibility and create separate arrays
-  const images = mediaData.filter(media => media.type === 'image').map(media => media.url);
+  const imageUrls = mediaData.filter(media => media.type === 'image').map(media => media.url);
   const videos = mediaData.filter(media => media.type === 'video').map(media => media.url);
-  const imageUrl = images.length > 0 ? images[0] : (videos.length > 0 ? videos[0] : '');
+  const imageUrl = imageUrls.length > 0 ? imageUrls[0] : (videos.length > 0 ? videos[0] : '');
 
   db.collection('furnitureItems').add({
     name,
     category,
     price,
     imageUrl,
-    images,
+    images: imageUrls,
     videos,
     mediaData,
     description,
@@ -623,16 +621,16 @@ editFurnitureForm.addEventListener('submit', e => {
   const featured = document.getElementById('edit-furniture-featured').checked;
 
   // Keep backward compatibility and create separate arrays
-  const images = mediaData.filter(media => media.type === 'image').map(media => media.url);
+  const imageUrls = mediaData.filter(media => media.type === 'image').map(media => media.url);
   const videos = mediaData.filter(media => media.type === 'video').map(media => media.url);
-  const imageUrl = images.length > 0 ? images[0] : (videos.length > 0 ? videos[0] : '');
+  const imageUrl = imageUrls.length > 0 ? imageUrls[0] : (videos.length > 0 ? videos[0] : '');
 
   db.collection('furnitureItems').doc(id).update({
     name,
     category,
     price,
     imageUrl,
-    images,
+    images: imageUrls,
     videos,
     mediaData,
     description,
