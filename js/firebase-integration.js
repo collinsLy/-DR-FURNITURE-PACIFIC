@@ -21,15 +21,15 @@ function initializeFirebase() {
       if (typeof firebase === 'undefined') {
         throw new Error('Firebase SDK not loaded');
       }
-      
+
       // Initialize Firebase
       app = firebase.initializeApp(firebaseConfig);
       db = firebase.firestore();
-      
+
       // Collection reference
       furnitureCollection = db.collection('furnitureItems');
       firebaseInitialized = true;
-      
+
       console.log('Firebase initialized successfully');
       resolve();
     } catch (error) {
@@ -63,13 +63,13 @@ function showFirebaseError() {
       </div>
     </div>
   `;
-  
+
   const containers = [
     document.getElementById('furnitureContainer'),
     document.getElementById('product-list'),
     document.querySelector('.popular-product .row')
   ];
-  
+
   containers.forEach(container => {
     if (container) {
       container.innerHTML = errorMessage;
@@ -583,3 +583,100 @@ function createProductCard(furniture) {
 
     return productCol;
   }
+
+    function displayFurnitureMedia(furniture) {
+      const swiperWrapper = document.querySelector('.swiper-wrapper');
+      if (!swiperWrapper) {
+        console.warn('Swiper wrapper not found');
+        return;
+      }
+
+      swiperWrapper.innerHTML = ''; // Clear existing slides
+      let mediaItems = [];
+
+      if (furniture.mediaData && furniture.mediaData.length > 0) {
+        mediaItems = furniture.mediaData;
+      } else if (furniture.images && furniture.images.length > 0) {
+        // Convert legacy format to new format for consistency
+        mediaItems = furniture.images.map(imageUrl => ({
+          url: imageUrl,
+          type: 'image'
+        }));
+      }
+
+      mediaItems.forEach(media => {
+        const slide = document.createElement('div');
+        slide.className = 'swiper-slide';
+
+        if (media.type === 'video') {
+          slide.innerHTML = `
+            <video class="furniture-media" controls style="width: 100%; height: 400px; object-fit: cover;">
+              <source src="${media.url}" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+          `;
+        } else {
+          slide.innerHTML = `<img src="${media.url}" alt="${furniture.name}" class="furniture-media" style="width: 100%; height: 400px; object-fit: cover;">`;
+        }
+
+        swiperWrapper.appendChild(slide);
+      });
+
+      // Initialize or update Swiper
+      if (swiper) {
+        swiper.destroy(true, true);
+      }
+
+      swiper = new Swiper('.swiper-container', {
+        navigation: {
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev',
+        },
+        pagination: {
+          el: '.swiper-pagination',
+          clickable: true,
+        },
+        loop: mediaItems.length > 1,
+      });
+    }
+
+    function displayFurnitureDetails(furniture) {
+      // Update basic information
+      document.getElementById('furnitureName').textContent = furniture.name || 'Unnamed Item';
+      document.getElementById('furniturePrice').textContent = `Ksh${(furniture.price || 0).toFixed(2)}`;
+      document.getElementById('furnitureDescription').textContent = furniture.description || 'No description available';
+      document.getElementById('furnitureCategory').textContent = furniture.category || 'Uncategorized';
+
+      // Display media
+      displayFurnitureMedia(furniture);
+
+      // Set up add to cart functionality
+      const addToCartBtn = document.getElementById('addToCartBtn');
+      if (addToCartBtn) {
+        addToCartBtn.onclick = function() {
+          let mainImageUrl = furniture.imageUrl;
+
+          // Get main image from new media format if available
+          if (furniture.mediaData && furniture.mediaData.length > 0) {
+            mainImageUrl = furniture.mediaData[0].url;
+          } else if (furniture.furnitureImages && furniture.furnitureImages.length > 0) {
+            mainImageUrl = furniture.furnitureImages[0];
+          }
+
+          const product = {
+            id: currentFurniture.id,
+            name: furniture.name,
+            price: furniture.price,
+            imageUrl: mainImageUrl
+          };
+
+          if (window.addToCart) {
+            window.addToCart(product);
+            showToast(`${furniture.name} added to cart!`, 'success');
+          } else {
+            console.error('addToCart function not found');
+            showToast('Error adding item to cart', 'error');
+          }
+        };
+      }
+    }
