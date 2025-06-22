@@ -155,7 +155,7 @@ function loadPopularProducts() {
   }
 
   // Get popular furniture items (limit to 3)
-  furnitureCollection.orderBy('views', 'desc').limit(3).get()
+  furnitureCollection.where('isPopular', '==', true).limit(3).get()
     .then(snapshot => {
       if (snapshot.empty) {
         console.log('No popular furniture items found');
