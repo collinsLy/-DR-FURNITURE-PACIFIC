@@ -1,0 +1,90 @@
+﻿
+firebase-integration.js:15 Uncaught ReferenceError: firebase is not defined
+    at firebase-integration.js:15:13
+Explanation
+
+Understanding the problem
+This error, Uncaught ReferenceError: firebase is not defined, means that your JavaScript code is trying to use a variable or object named firebase, but the browser cannot find it. This typically happens when the Firebase JavaScript SDK has not been properly loaded and initialized before your code attempts to use it [1].
+
+The at firebase-integration.js:15:13 part of the error indicates the specific location in your code where the problem occurred: line 15, character 13 of the file firebase-integration.js.
+
+Suggested fix
+Ensure that you have included the Firebase SDK scripts in your HTML file before the firebase-integration.js script that uses Firebase.
+
+You can add the necessary Firebase SDK scripts to the <head> or at the end of the <body> of your HTML file. Make sure to replace YOUR-API-KEY, YOUR-AUTH-DOMAIN, etc., with your actual Firebase project configuration values.
+
+Code
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Your App</title>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-firestore-compat.js"></script>
+  <!-- Add other Firebase products you need here -->
+
+  <script>
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "YOUR-API-KEY",
+      authDomain: "YOUR-AUTH-DOMAIN",
+      projectId: "YOUR-PROJECT-ID",
+      storageBucket: "YOUR-STORAGE-BUCKET",
+      messagingSenderId: "YOUR-MESSAGING-SENDER-ID",
+      appId: "YOUR-APP-ID"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+  </script>
+
+</head>
+<body>
+  <!-- Your page content -->
+
+  <!-- Your custom script that uses Firebase -->
+  <script src="firebase-integration.js"></script>
+</body>
+</html>
+Use code snippets with caution
+
+Note: The version numbers in the CDN URLs (9.1.0 in this example) should match the version of the Firebase SDK you intend to use. You might need to update these to the latest versions.
+
+Summary
+The Uncaught ReferenceError: firebase is not defined error occurs when the Firebase JavaScript SDK is not loaded before your code tries to use the firebase object. To fix this, include the necessary Firebase SDK scripts in your HTML file and initialize Firebase before any scripts that depend on it.
+
+Sources and related content
+Data used to understand this message
+Use search instead
+AI tools may generate inaccurate info that doesn't represent Google's views. Data sent to Google may be seen by human reviewers to improve this feature. Open settings or learn more
+
+
+
+firebase-integration.js:302 Uncaught ReferenceError: Cannot access 'furnitureCollection' before initialization
+    at loadCategories (firebase-integration.js:302:3)
+    at HTMLDocument.<anonymous> (shop-firebase.html:247:5)
+Explanation
+
+Understanding the problem
+This error, Uncaught ReferenceError: Cannot access 'furnitureCollection' before initialization, means you are trying to use the variable furnitureCollection before it has been declared and assigned a value. This often happens when you use let or const to declare a variable, as these declarations are not hoisted to the top of their scope in the same way var is. The JavaScript engine encounters the usage of furnitureCollection before it has processed the line where furnitureCollection is declared, leading to this error.
+
+How to verify
+To verify this, examine the loadCategories function in firebase-integration.js at line 302. Check the location where furnitureCollection is declared relative to where it is first used. If the declaration appears after its first use, this is the source of the error.
+
+Suggested fix
+Ensure that furnitureCollection is declared using let or const before it is used within the loadCategories function.
+
+js
+
+function loadCategories() {
+  const furnitureCollection = // ... initialize your variable here
+  // ... rest of your function where furnitureCollection is used
+}
+Use code snippets with caution
+
+Summary
+The Uncaught ReferenceError: Cannot access 'furnitureCollection' before initialization error occurs when a variable declared with let or const is accessed before its declaration in the code. The fix is to ensure the variable is declared before its first use.
+
+Data used to understand this message
